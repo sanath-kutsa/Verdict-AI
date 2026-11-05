@@ -59,11 +59,20 @@ $hype = Invoke-RestMethod -Uri "$base/api/hype-radar" -Method Post -ContentType 
 $moveBody = @{ user_id = $userId; symbol = "NOVA"; move_type = "Breakout"; price_change_pct = 5; volume_multiple = 2.1; catalyst = "Quarterly results"; move_context = "Price rose after results on higher-than-average volume." } | ConvertTo-Json
 $move = Invoke-RestMethod -Uri "$base/api/move-autopsy" -Method Post -ContentType "application/json" -Body $moveBody
 
-$bullBearBody = @{ user_id = $userId; symbol = "NOVA"; bull_thesis = "AI demand could expand revenue."; bear_thesis = "Valuation and margin pressure may limit returns." } | ConvertTo-Json
+$bullBearBody = @{ user_id = $userId; symbol = "NOVA"; horizon = "1 to 3 years"; bull_thesis = "AI demand could expand revenue."; bear_thesis = "Valuation and margin pressure may limit returns." } | ConvertTo-Json
 $bullBear = Invoke-RestMethod -Uri "$base/api/bull-vs-bear" -Method Post -ContentType "application/json" -Body $bullBearBody
 
 $earningsBody = @{ user_id = $userId; company = "NOVA"; quarter = "Q2 FY2026"; transcript_text = "Revenue increased by 25 percent. Net profit increased by 8 percent. Management expects demand to remain strong, but costs could affect margins." } | ConvertTo-Json
 $earnings = Invoke-RestMethod -Uri "$base/api/earnings-language" -Method Post -ContentType "application/json" -Body $earningsBody
+
+if ($dna.result.self_assessment.risk_style -ne "Moderate") { throw "Investor DNA did not return the submitted risk style." }
+if ($circuit.result.proposed_trade.emotional_state -ne "Excited") { throw "Circuit Breaker did not return the submitted emotional state." }
+if ($stress.result.positions.Count -ne 1 -or $stress.result.positions[0].symbol -ne "NOVA" -or $stress.result.hypothetical_change_pct -ne -20) { throw "Stress Test did not use the submitted symbol, quantity, price, and shock." }
+if ($regret.result.filters.review_note -ne "Review the partial exit.") { throw "Regret Replay did not return the review note." }
+if ($hype.result.theme -ne "AI infrastructure" -or $hype.result.narrative_analysis.promotional_terms -notcontains "guaranteed") { throw "Hype Radar did not analyse the submitted narrative." }
+if (-not ($move.result.drivers | Where-Object { $_.category -eq "user_supplied_context" })) { throw "Move Autopsy did not include submitted context." }
+if ($bullBear.result.investment_horizon -ne "1 to 3 years") { throw "Bull vs Bear did not return the investment horizon." }
+if ($earnings.result.transcript_word_count -le 0) { throw "Earnings Analysis did not analyse the submitted transcript." }
 
 Write-Host ""
 Write-Host "RESULTS" -ForegroundColor Cyan
