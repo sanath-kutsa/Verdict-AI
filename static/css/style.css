@@ -813,6 +813,73 @@ body[data-theme="dark"] .brand-dark {
   padding-top: 12px;
 }
 
+.feature-form {
+  display: grid;
+  gap: 16px;
+}
+
+.feature-input {
+  display: grid;
+  gap: 7px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.feature-input input,
+.feature-input select,
+.feature-input textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 450;
+}
+
+.feature-input textarea {
+  min-height: 118px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.feature-input input:focus,
+.feature-input select:focus,
+.feature-input textarea:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+#verdict-feature-output {
+  align-content: start;
+  overflow-wrap: anywhere;
+}
+
+#verdict-feature-output pre {
+  max-height: 360px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+#verdict-feature-output details {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+#verdict-feature-output summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 650;
+}
+
 .result-stack {
   display: grid;
   gap: 14px;
