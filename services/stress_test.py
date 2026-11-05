@@ -14,7 +14,7 @@ def _open_positions(trades):
     return {symbol: qty for symbol, qty in positions.items() if qty > 0}
 
 
-def run_stress_test(investor, scenario_change_pct=-10.0, position=None):
+def run_stress_test(investor, scenario_change_pct=-10.0, position=None, assumption=None):
     """Apply a hypothetical uniform price shock to simulated open positions."""
     try:
         change_pct = float(scenario_change_pct)
@@ -95,6 +95,8 @@ def run_stress_test(investor, scenario_change_pct=-10.0, position=None):
 
     result = {
         "scenario_change_pct": round(change_pct, 2),
+        "assumption": str(assumption or "")[:700],
+        "analysis_scope": "selected_position" if position else "saved_paper_trade_portfolio",
         "currency": investor.get("currency", "INR"),
         "positions": rows,
         "current_simulated_portfolio_value": round(current_total, 2),
@@ -107,7 +109,7 @@ def run_stress_test(investor, scenario_change_pct=-10.0, position=None):
         "data_mode": "simulated",
         "result": result,
         "explanation": {
-            "summary": f"A hypothetical {change_pct:+.1f}% price change was applied to the selected position or saved paper-trade holdings.",
+            "summary": f"A hypothetical {change_pct:+.1f}% price change was applied to the selected position or saved paper-trade holdings." + ((" Assumption: " + str(assumption)[:300]) if assumption else ""),
             "key_findings": [
                 f"{len(rows)} simulated open positions were included.",
                 f"The calculated portfolio value changes by {stressed_total - current_total:,.2f} {investor.get('currency', 'INR')} under this simplified scenario."
