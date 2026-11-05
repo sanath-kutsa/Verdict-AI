@@ -13,6 +13,7 @@ from services.hype_radar import analyse_hype
 from services.move_autopsy import analyse_move
 from services.bull_bear import build_bull_bear
 from services.earnings_language import analyse_earnings_language
+from services.ai_analysis import AIAnalysisError, generate_feature_analysis
 
 def load_local_env():
     """Load ignored local .env settings without requiring an extra package."""
@@ -31,10 +32,25 @@ def load_local_env():
 load_local_env()
 
 
-def attach_local_analysis(feature, payload, response):
-    """Keep every workflow fully usable offline with transparent local calculations."""
-    response["analysis_mode"] = "local_rule_based_and_deterministic"
+def attach_gemini_analysis(feature, payload, response):
+    """Add Gemini interpretation while preserving deterministic results as a fallback."""
     response["data_mode"] = response.get("data_mode", "simulated")
+    try:
+        analysis = generate_feature_analysis(feature, payload or {}, response)
+        response["analysis_mode"] = "gemini"
+        response["ai_analysis"] = analysis
+
+        explanation = response.setdefault("explanation", {})
+        explanation["summary"] = analysis.get("summary", explanation.get("summary", "Analysis completed."))
+        explanation["key_findings"] = analysis.get("key_findings", explanation.get("key_findings", []))
+
+        existing_limitations = explanation.get("limitations", [])
+        added_limitations = analysis.get("limitations", []) + analysis.get("data_gaps", [])
+        explanation["limitations"] = list(dict.fromkeys(existing_limitations + added_limitations))
+    except AIAnalysisError as error:
+        response["analysis_mode"] = "local_rule_based_and_deterministic"
+        response["ai_error"] = str(error)
+
     return response
 
 
@@ -114,7 +130,7 @@ def health():
     return jsonify({
         "status": "ok",
         "message": "Verdict AI backend is running.",
-        "ai_configured": False,
+        "ai_configured": bool(os.environ.get("GEMINI_API_KEY")),
         "analysis_mode": "local_rule_based_and_deterministic",
     })
 
@@ -211,7 +227,7 @@ def investor_dna():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     assessment = payload if request.method == "POST" else None
-    return jsonify(attach_local_analysis("investor_dna", payload, analyse_investor_dna(investor, assessment)))
+    return jsonify(attach_gemini_analysis("investor_dna", payload, analyse_investor_dna(investor, assessment)))
 
 
 @app.route("/api/circuit-breaker", methods=["GET", "POST"])
@@ -237,7 +253,7 @@ def circuit_breaker():
             "price": request.args.get("price", default=130, type=float),
             "reason": request.args.get("reason", "Bought after a sharp price jump; feared missing out")
         }
-    return jsonify(attach_local_analysis("circuit_breaker", payload, analyse_circuit_breaker(investor, proposed_trade or {})))
+    return jsonify(attach_gemini_analysis("circuit_breaker", payload, analyse_circuit_breaker(investor, proposed_trade or {})))
 
 
 @app.route("/api/stress-test", methods=["GET", "POST"])
@@ -252,7 +268,7 @@ def stress_test():
     else:
         change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
         position = None
-    return jsonify(attach_local_analysis("stress_test", payload, run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None)))
+    return jsonify(attach_gemini_analysis("stress_test", payload, run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None)))
 
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
@@ -265,7 +281,7 @@ def regret_replay():
         lookback_days=payload.get("lookback_days"),
         review_note=payload.get("review_note"),
     )
-    return jsonify(attach_local_analysis("regret_replay", payload, result))
+    return jsonify(attach_gemini_analysis("regret_replay", payload, result))
 
 
 @app.route("/api/hype-radar", methods=["GET", "POST"])
@@ -284,7 +300,7 @@ def hype_radar():
         signal_source=payload.get("signal_source") if isinstance(payload, dict) else None,
         narrative=payload.get("narrative") if isinstance(payload, dict) else None,
     )
-    return jsonify(attach_local_analysis("hype_radar", payload, result))
+    return jsonify(attach_gemini_analysis("hype_radar", payload, result))
 
 
 @app.route("/api/move-autopsy", methods=["GET", "POST"])
@@ -305,7 +321,7 @@ def move_autopsy():
         volume_multiple=payload.get("volume_multiple") if isinstance(payload, dict) else None,
         catalyst=payload.get("catalyst") if isinstance(payload, dict) else None,
     )
-    return jsonify(attach_local_analysis("move_autopsy", payload, result))
+    return jsonify(attach_gemini_analysis("move_autopsy", payload, result))
 
 
 @app.route("/api/bull-vs-bear", methods=["GET", "POST"])
@@ -319,7 +335,7 @@ def bull_vs_bear():
     )
     bull_thesis = payload.get("bull_thesis") if isinstance(payload, dict) else None
     bear_thesis = payload.get("bear_thesis") if isinstance(payload, dict) else None
-    return jsonify(attach_local_analysis("bull_vs_bear", payload, build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None)))
+    return jsonify(attach_gemini_analysis("bull_vs_bear", payload, build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None)))
 
 
 @app.route("/api/earnings-language", methods=["GET", "POST"])
@@ -333,7 +349,7 @@ def earnings_language():
         transcript_text=payload.get("transcript_text"),
         quarter=payload.get("quarter"),
     )
-    return jsonify(attach_local_analysis("earnings_analysis", payload, result))
+    return jsonify(attach_gemini_analysis("earnings_analysis", payload, result))
 
 
 if __name__ == "__main__":
