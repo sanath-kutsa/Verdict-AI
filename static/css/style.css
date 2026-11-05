@@ -176,6 +176,13 @@ body[data-theme="dark"] .auth-card {
   min-width: 0;
 }
 
+/* The dashboard uses a separate text wordmark beside its icon. */
+body[data-page="dashboard"] .brand-lockup .exact-brand {
+  width: 28px;
+  height: 28px;
+  max-width: 28px;
+}
+
 .brand-wordmark-lockup {
   display: inline-flex;
   align-items: baseline;
