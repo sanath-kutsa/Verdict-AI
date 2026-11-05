@@ -211,7 +211,7 @@ def stress_test():
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
 def regret_replay():
-    payload = request.get_json(silent=True) if request.method == "POST" else request.args
+    payload = (request.get_json(silent=True) if request.method == "POST" else request.args) or {}
     investor = get_investor_payload(payload)
     return jsonify(replay_sells(
         investor,
