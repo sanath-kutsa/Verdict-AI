@@ -47,6 +47,8 @@ $circuitBody = @{
         quantity = 1
         price = 133.56
         reason = "FOMO after breakout and trending online"
+        emotional_state = "Excited"
+        confidence = "Very high"
     }
 } | ConvertTo-Json -Depth 6
 $circuit = Invoke-RestMethod -Uri "$base/api/circuit-breaker" -Method Post -ContentType "application/json" -Body $circuitBody
@@ -93,5 +95,5 @@ Write-Host "[PASS] 6. Move Autopsy: $($move.result.symbol), $($move.result.evide
 Write-Host "[PASS] 7. Bull vs Bear: $($bullBear.result.bull_case.Count) bull point(s), $($bullBear.result.bear_case.Count) bear point(s)"
 Write-Host "[PASS] 8. Earnings Language: $($earnings.result.flag_count) wording flag(s)"
 Write-Host ""
-Write-Host "Smoke test completed. All results use fictional simulated data." -ForegroundColor Green
+Write-Host "Smoke test completed. Gemini analysed submitted inputs; bundled market history remains illustrative sample data." -ForegroundColor Green
 Write-Host "Test account ID: $userId (safe to leave in the local demo database)."
