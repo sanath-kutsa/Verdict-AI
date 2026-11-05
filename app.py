@@ -5,6 +5,9 @@ from services.circuit_breaker import analyse_circuit_breaker
 from services.stress_test import run_stress_test
 from services.regret_replay import replay_sells
 from services.hype_radar import analyse_hype
+from services.move_autopsy import analyse_move
+from services.bull_bear import build_bull_bear
+from services.earnings_language import analyse_earnings_language
 
 app = Flask(__name__)
 
@@ -23,6 +26,13 @@ def make_response(feature, result, summary, key_findings=None, limitations=None,
     }
 
 
+def get_investor_payload(payload=None):
+    """Use an optional supplied fictional dataset, otherwise use the demo dataset."""
+    if isinstance(payload, dict) and isinstance(payload.get("investor"), dict):
+        return payload["investor"]
+    return load_investor_data()
+
+
 @app.get("/")
 def home():
     return jsonify({
@@ -35,7 +45,10 @@ def home():
             "circuit_breaker",
             "stress_test",
             "regret_replay",
-            "hype_radar"
+            "hype_radar",
+            "move_autopsy",
+            "bull_vs_bear",
+            "earnings_language_analyser"
         ]
     })
 
@@ -49,32 +62,31 @@ def health():
 def dashboard():
     investor = load_investor_data()
     trades = investor.get("trades", [])
-
     result = {
         "investor_name": investor.get("investor_name", "Demo Investor"),
         "total_trades": len(trades),
         "recent_trades": trades[-5:],
     }
-
-    response = make_response(
+    return jsonify(make_response(
         feature="dashboard",
         result=result,
         summary="Dashboard data loaded from the fictional investor profile.",
         key_findings=[f"{len(trades)} simulated trades are available for analysis."],
-    )
-    return jsonify(response)
+    ))
 
 
-@app.get("/api/investor-dna")
+@app.route("/api/investor-dna", methods=["GET", "POST"])
 def investor_dna():
-    investor = load_investor_data()
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
     return jsonify(analyse_investor_dna(investor))
 
 
 @app.route("/api/circuit-breaker", methods=["GET", "POST"])
 def circuit_breaker():
-    investor = load_investor_data()
-    proposed_trade = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
+    proposed_trade = payload.get("proposed_trade", payload) if isinstance(payload, dict) else None
     if request.method == "GET":
         proposed_trade = {
             "symbol": request.args.get("symbol", "NOVA"),
@@ -88,26 +100,69 @@ def circuit_breaker():
 
 @app.route("/api/stress-test", methods=["GET", "POST"])
 def stress_test():
-    investor = load_investor_data()
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
     if request.method == "POST":
-        payload = request.get_json(silent=True) or {}
-        change_pct = payload.get("scenario_change_pct", -10)
+        change_pct = payload.get("scenario_change_pct", -10) if isinstance(payload, dict) else -10
     else:
         change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
     return jsonify(run_stress_test(investor, change_pct))
 
 
-@app.get("/api/regret-replay")
+@app.route("/api/regret-replay", methods=["GET", "POST"])
 def regret_replay():
-    investor = load_investor_data()
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
     return jsonify(replay_sells(investor))
 
 
-@app.get("/api/hype-radar")
+@app.route("/api/hype-radar", methods=["GET", "POST"])
 def hype_radar():
-    investor = load_investor_data()
-    multiplier = request.args.get("spike_multiplier", default=2.0, type=float)
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
+    multiplier = (
+        payload.get("spike_multiplier", 2.0)
+        if isinstance(payload, dict) and request.method == "POST"
+        else request.args.get("spike_multiplier", default=2.0, type=float)
+    )
     return jsonify(analyse_hype(investor, multiplier))
+
+
+@app.route("/api/move-autopsy", methods=["GET", "POST"])
+def move_autopsy():
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
+    symbol = (
+        payload.get("symbol", "NOVA")
+        if isinstance(payload, dict) and request.method == "POST"
+        else request.args.get("symbol", "NOVA")
+    )
+    return jsonify(analyse_move(investor, symbol))
+
+
+@app.route("/api/bull-vs-bear", methods=["GET", "POST"])
+def bull_vs_bear():
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    investor = get_investor_payload(payload)
+    symbol = (
+        payload.get("symbol", "NOVA")
+        if isinstance(payload, dict) and request.method == "POST"
+        else request.args.get("symbol", "NOVA")
+    )
+    return jsonify(build_bull_bear(investor, symbol))
+
+
+@app.route("/api/earnings-language", methods=["GET", "POST"])
+def earnings_language():
+    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = payload if isinstance(payload, dict) else {}
+    investor = get_investor_payload(payload)
+    return jsonify(analyse_earnings_language(
+        investor,
+        company=payload.get("company") or request.args.get("company"),
+        transcript_text=payload.get("transcript_text"),
+        quarter=payload.get("quarter"),
+    ))
 
 
 if __name__ == "__main__":
