@@ -663,5 +663,31 @@
       "quarter": "Q2 FY2026",
       "text": "We saw a mixed quarter across regions. Some projects moved more slowly than expected. The team is working through these issues."
     }
-  ]
+  ],
+  "fundamentals": {
+    "NOVA": {
+      "revenue_growth_pct": 12.4,
+      "operating_margin_pct": 18.2,
+      "debt_to_equity": 0.62,
+      "guidance_note": "Management says launch timing is still being evaluated."
+    },
+    "ORBIT": {
+      "revenue_growth_pct": 7.1,
+      "operating_margin_pct": 9.4,
+      "debt_to_equity": 1.18,
+      "guidance_note": "Operating costs increased and management plans to provide more detail later."
+    },
+    "PULSE": {
+      "revenue_growth_pct": 5.6,
+      "operating_margin_pct": 14.8,
+      "debt_to_equity": 0.74,
+      "guidance_note": "Outlook remains dependent on market conditions."
+    },
+    "ZENITH": {
+      "revenue_growth_pct": -2.8,
+      "operating_margin_pct": 6.1,
+      "debt_to_equity": 1.35,
+      "guidance_note": "Some regional projects progressed more slowly than expected."
+    }
+  }
 }
