@@ -79,32 +79,12 @@
           <p>Access your financial intelligence workspace and decision review tools.</p>
         </div>
 
-        <form class="auth-form" method="get" novalidate>
+        <form class="auth-form" novalidate>
           <label class="field-wrap">
-            <span>Email</span>
-            <input type="email" name="email" placeholder="analyst@verdict.ai" />
+            <span>Your name</span>
+            <input type="text" name="name" placeholder="Enter your name" maxlength="80" autocomplete="name" required />
           </label>
-
-          <label class="field-wrap">
-            <span>Password</span>
-            <div class="password-stack">
-              <input type="password" name="password" placeholder="Enter your password" data-password-input />
-              <button type="button" class="password-toggle" data-password-toggle aria-label="Show password">Show</button>
-            </div>
-          </label>
-
-          <div class="auth-row">
-            <label class="remember-me">
-              <input type="checkbox" name="remember" />
-              <span>Remember me</span>
-            </label>
-            <a href="#" class="text-link" data-auth-message="Password reset is pending backend integration. Please use Continue as Demo for access in this prototype.">Forgot password?</a>
-          </div>
-
-          <button type="submit" class="primary-btn auth-submit" data-email-signin>Sign in</button>
-          <button type="button" class="oauth-btn" data-provider="Google">Continue with Google</button>
-          <button type="button" class="oauth-btn oauth-btn-apple" data-provider="Apple">Continue with Apple</button>
-          <button type="button" class="secondary-btn demo-login" data-demo-login="true">Continue as Demo</button>
+          <button type="submit" class="primary-btn auth-submit" data-email-signin>Continue to Verdict AI</button>
         </form>
 
         <div class="auth-alert" aria-live="polite"></div>
