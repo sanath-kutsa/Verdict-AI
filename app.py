@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from services.demo_data import load_investor_data
 from services.database import (
     init_db, create_guest_user, get_user, get_user_trades,
@@ -61,17 +61,26 @@ def handle_bad_request(error):
 
 @app.get("/")
 def home():
-    return jsonify({
-        "name": "Verdict AI",
-        "tagline": "Decide before you trade.",
-        "status": "Backend is running",
-        "data_mode": "simulated",
-        "available_features": [
-            "investor_dna", "circuit_breaker", "stress_test", "regret_replay",
-            "hype_radar", "move_autopsy", "bull_vs_bear",
-            "earnings_language_analyser"
-        ]
-    })
+    return render_template("index.html")
+
+
+@app.get("/login")
+def login_page():
+    return render_template("login.html")
+
+
+@app.get("/dashboard")
+def dashboard_page():
+    return render_template("dashboard.html")
+
+
+@app.get("/<path:page_name>")
+def template_page(page_name):
+    template_file = page_name if page_name.endswith(".html") else f"{page_name}.html"
+    try:
+        return render_template(template_file)
+    except Exception:
+        return "Page not found", 404
 
 
 @app.get("/api/health")
@@ -151,7 +160,7 @@ def user_portfolio(user_id):
 
 @app.get("/api/dashboard")
 def dashboard():
-    investor = load_investor_data()
+    investor = get_investor_payload(request.args)
     trades = investor.get("trades", [])
     result = {
         "investor_name": investor.get("investor_name", "Demo Investor"),
