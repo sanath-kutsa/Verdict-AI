@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const watchlist = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || '[]');
-    const items = watchlist.length ? watchlist : ['APLX', 'NVDA', 'TERRA'];
+    const items = watchlist.length ? watchlist : ['RELIANCE', 'TCS', 'INFY'];
     const prices = demoStocks.filter((stock) => items.includes(stock.symbol));
 
     if (collectionTitle) {
@@ -304,11 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const defaultWatchlist = ['RELIANCE', 'TCS'];
-    const defaultTransactions = [
-      { symbol: 'RELIANCE', side: 'Buy', qty: 15, value: 44679.00, date: 'Today' },
-      { symbol: 'INFY', side: 'Sell', qty: 8, value: 12499.60, date: 'Yesterday' }
-    ];
+    const defaultWatchlist = ['RELIANCE', 'TCS', 'INFY'];
+    const defaultTransactions = [];
 
     const getWatchlist = () => {
       try {
@@ -324,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const getTransactions = () => {
       try {
         const saved = JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]');
-        return saved.length ? saved : defaultTransactions;
+        return saved;
       } catch (error) {
         return defaultTransactions;
       }
@@ -335,6 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderTransactions = () => {
       const transactions = getTransactions();
       if (!transactionList) return;
+      if (!transactions.length) { transactionList.innerHTML = '<li class="transaction-item">No saved demo trades yet.</li>'; return; }
       transactionList.innerHTML = transactions.slice(0, 4).map((item) => `
         <li class="transaction-item">
           <div>
@@ -599,6 +597,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const isLogoutLink = item.dataset.logout === 'true';
       if (isLogoutLink) {
         localStorage.removeItem(DEMO_MODE_KEY);
+        localStorage.removeItem('verdict-user-id');
+        localStorage.removeItem('verdict-user-name');
+        localStorage.removeItem('verdict-selected-symbol');
         localStorage.removeItem(WATCHLIST_KEY);
         localStorage.removeItem(TRANSACTIONS_KEY);
         return;
@@ -688,13 +689,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const stepMinutes = rangeLabel === '1D' ? 30 : rangeLabel === '1W' ? 90 : rangeLabel === '1M' ? 180 : 360;
 
     for (let i = 0; i < total; i += 1) {
-      const open = base[i] * (1 + ((i % 5) - 2) * 0.004);
-      const neutralCandle = i % 9 === 0;
-      const close = neutralCandle
-        ? open
-        : base[(i + 8) % base.length] * (1 + ((i % 6) - 2.5) * 0.0045);
-      const high = Math.max(open, close) * (1 + 0.008 + (i % 4) * 0.004);
-      const low = Math.min(open, close) * (1 - 0.008 - (i % 4) * 0.004);
+      // Adjacent sample values create genuine advances and pullbacks.
+      const open = base[i % base.length];
+      const close = base[(i + 1) % base.length];
+      const wick = 0.004 + (i % 4) * 0.002;
+      const high = Math.max(open, close) * (1 + wick);
+      const low = Math.min(open, close) * (1 - wick);
       const time = new Date(Date.now() - (total - i) * stepMinutes * 60 * 1000);
       entries.push({
         time: Math.floor(time.getTime() / 1000),
