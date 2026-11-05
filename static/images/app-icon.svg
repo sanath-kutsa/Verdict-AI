@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="appIconGrad" x1="78" y1="58" x2="392" y2="392" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A4A5D"/>
+      <stop offset="0.5" stop-color="#0F7C7B"/>
+      <stop offset="1" stop-color="#69D7CB"/>
+    </linearGradient>
+  </defs>
+  <path d="M80 96L184 310H220L316 76H388L260 412H204L80 96Z" fill="url(#appIconGrad)"/>
+  <path d="M174 332L220 252L250 283L320 180H374L250 354H214L174 332Z" fill="#A7F3E8"/>
+  <path d="M152 352H246V384H152V352ZM286 352H356V384H286V352ZM224 352H268V384H224V352Z" fill="#0F5F67" opacity="0.9"/>
+</svg>

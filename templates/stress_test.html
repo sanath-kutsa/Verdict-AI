@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VERDICT AI | Stress Test</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/verdict-ai-exact-logo.png" />
+  </head>
+  <body data-page="stress_test">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+        <div class="sidebar-header">
+          <div class="brand-block">
+            <img class="brand-logo exact-brand" src="/static/images/verdict-ai-exact-logo.png" alt="VERDICT AI" />
+          </div>
+          <button type="button" class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <div class="nav-group-label">OVERVIEW</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <div class="nav-group-label">INTELLIGENCE</div>
+          <a href="circuit_breaker.html" class="nav-item">Circuit Breaker</a>
+          <a href="move_autopsy.html" class="nav-item">Move Autopsy</a>
+          <a href="stress_test.html" class="nav-item active">Stress Test</a>
+          <a href="bull_bear.html" class="nav-item">Bull vs Bear</a>
+          <a href="regret_replay.html" class="nav-item">Regret Replay</a>
+          <a href="hype_radar.html" class="nav-item">Hype Radar</a>
+          <a href="earnings_analysis.html" class="nav-item">Earnings Analysis</a>
+          <a href="investor_dna.html" class="nav-item">Investor DNA</a>
+          <div class="nav-group-label">MARKETS</div>
+          <a href="invest.html" class="nav-item">Invest</a>
+          <a href="watchlist.html" class="nav-item">Watchlist</a>
+          <a href="portfolio.html" class="nav-item">Portfolio</a>
+          <div class="nav-group-label">ACCOUNT</div>
+          <a href="profile.html" class="nav-item">Profile</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+          <a href="login.html" class="nav-item" data-logout="true">Logout / Exit Demo</a>
+        </nav>
+        <div class="demo-card"><h4>Demo mode</h4><p>Fictional analysis for the multi-page platform.</p></div>
+      </aside>
+      <main class="dashboard page-shell">
+        <header class="topbar">
+          <div class="company-block"><div class="company-avatar">ST</div><div class="company-text"><h2>Stress Test</h2><p>Scenario analysis</p></div></div>
+          <div class="topbar-tools"><div class="theme-toggle-wrap"><span class="theme-mode-label theme-mode-light">LIGHT</span><button type="button" class="theme-toggle" role="switch" aria-label="Switch to dark mode" aria-checked="false"><span class="theme-toggle-track"><span class="theme-toggle-icons"><svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 1.75v2.2M12 20.05v2.2M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M1.75 12h2.2M20.05 12h2.2M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg><svg class="moon-icon" viewBox="0 0 24 24"><path d="M20.2 14.9A7.8 7.8 0 0 1 9.1 3.8a8.3 8.3 0 1 0 11.1 11.1Z"></path></svg></span><span class="theme-toggle-thumb"></span></span></button><span class="theme-mode-label theme-mode-dark">DARK</span></div></div>
+        </header>
+        <section class="feature-panel">
+          <div class="feature-summary">
+            <div>
+              <span class="eyebrow">Stress test</span>
+              <h2>Scenario resilience</h2>
+              <p>Measure how your thesis behaves under tapering liquidity, rates spikes or earnings misses.</p>
+            </div>
+            <a href="dashboard.html" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 16px; min-height:44px; border-radius:12px;">Back to dashboard</a>
+          </div>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h3>Scenario controls</h3>
+              <div class="input-grid">
+                <select aria-label="Scenario selection"><option>Rates +100 bps</option><option>Revenue miss on earnings</option><option>Sector rotation</option></select>
+                <input type="text" value="Portfolio shock: -8%" aria-label="Shock" />
+                <textarea aria-label="Assumption">Assume broad market breadth stays weak while the name is still priced for perfection.</textarea>
+              </div>
+              <button type="button" class="primary-btn" style="margin-top:12px;">Run stress test</button>
+            </div>
+
+            <div class="feature-card result-stack">
+              <div class="analysis-state visible" data-panel="demo">
+                <span class="score-pill warning">Stress score 61/100</span>
+                <div style="margin-top:12px;">
+                  <h3>Portfolio holds up under moderate shock but dips below the target buffer.</h3>
+                  <p>Base case still positive, but downside capture rises sharply once the sector sells off.</p>
+                </div>
+                <div class="timeline">
+                  <div class="timeline-row"><strong>Rates shock</strong><div class="meter"><span style="width: 65%"></span></div><span>65%</span></div>
+                  <div class="timeline-row"><strong>Earnings miss</strong><div class="meter"><span style="width: 72%"></span></div><span>72%</span></div>
+                  <div class="timeline-row"><strong>Liquidity squeeze</strong><div class="meter"><span style="width: 58%"></span></div><span>58%</span></div>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="loading">
+                <span class="score-pill">Computing scenarios</span>
+                <div style="margin-top:12px;">
+                  <h3>Running multi-factor stress simulations...</h3>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="empty">
+                <span class="score-pill">No scenarios saved</span>
+                <div style="margin-top:12px;">
+                  <h3>Create a scenario to compare outcomes.</h3>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="error">
+                <span class="score-pill warning">Scenario engine failed</span>
+                <div style="margin-top:12px;">
+                  <h3>Stress-run was unable to complete.</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

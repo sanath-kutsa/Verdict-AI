@@ -1,0 +1,16 @@
+<svg width="720" height="140" viewBox="0 0 720 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wordmarkDarkGrad" x1="32" y1="25" x2="680" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3FFFD"/>
+      <stop offset="0.45" stop-color="#B7F5EC"/>
+      <stop offset="1" stop-color="#7FE7D8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(0 6)">
+    <path d="M28 10L74 94H88L132 10H162L102 116H84L28 10Z" fill="url(#wordmarkDarkGrad)"/>
+    <path d="M64 96L88 60L100 73L135 28H152L100 112H87L64 96Z" fill="#8DE8D7"/>
+    <path d="M144 28H186V40H144V28ZM144 54H176V66H144V54ZM144 80H164V92H144V80Z" fill="#EAFDF9" opacity="0.92"/>
+    <path d="M194 10H262V26H194V10ZM194 38H248V54H194V38ZM194 66H224V82H194V66Z" fill="#EAFDF9" opacity="0.92"/>
+    <text x="206" y="92" font-family="Segoe UI, Arial, sans-serif" font-size="64" font-weight="800" letter-spacing="2" fill="url(#wordmarkDarkGrad)">VERDICT AI</text>
+  </g>
+</svg>

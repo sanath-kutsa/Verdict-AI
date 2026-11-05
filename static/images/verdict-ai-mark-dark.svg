@@ -1,0 +1,19 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vDarkGrad" x1="32" y1="24" x2="196" y2="204" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E8FFFD"/>
+      <stop offset="0.5" stop-color="#A9F5EC"/>
+      <stop offset="1" stop-color="#6ED7D0"/>
+    </linearGradient>
+    <linearGradient id="arrowDarkGrad" x1="42" y1="42" x2="176" y2="178" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D9FFF9"/>
+      <stop offset="1" stop-color="#7FE3D3"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M20 32L84 156H103L158 40H188L109 196H78L20 32Z" fill="url(#vDarkGrad)"/>
+  <path d="M74 156L105 112L125 132L169 74H190L125 170H102L74 156Z" fill="url(#arrowDarkGrad)"/>
+  <path d="M140 54H196V70H140V54ZM140 82H178V98H140V82ZM140 110H163V126H140V110Z" fill="#E4FFFB" opacity="0.9"/>
+  <path d="M42 154H88V170H42V154Z" fill="#DFFEF9" opacity="0.9"/>
+  <path d="M118 154H160V170H118V154Z" fill="#DFFEF9" opacity="0.9"/>
+</svg>

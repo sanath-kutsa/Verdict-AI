@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VERDICT AI | Login</title>
+    <meta
+      name="description"
+      content="VERDICT AI login. Decide Before You Trade. Demo mode access to the financial intelligence platform."
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/verdict-ai-exact-logo.png" />
+  </head>
+  <body data-page="login">
+    <div class="auth-shell">
+      <div class="auth-illustration-wrap">
+        <div class="auth-card auth-card-primary">
+          <div class="auth-brand-row">
+            <div class="brand-lockup">
+              <img class="brand-icon exact-brand" src="/static/images/verdict-ai-exact-logo.png" alt="VERDICT AI" />
+              <div class="brand-wordmark-lockup" aria-label="VERDICT AI">
+                <span class="brand-word">VERDICT</span>
+                <span class="brand-accent">AI</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="auth-copy">
+            <span class="eyebrow">Decision intelligence</span>
+            <h1>Decide Before You Trade.</h1>
+            <p>
+              Turn signal noise into actionability with market context, scenario stress tests,
+              and behavioral reasoning built for disciplined investors.
+            </p>
+          </div>
+
+          <div class="glass-chart" aria-label="Sample market chart illustration">
+            <div class="chart-grid-lines"></div>
+            <svg viewBox="0 0 560 260" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="authChartFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(53, 201, 188, 0.38)" />
+                  <stop offset="100%" stop-color="rgba(53, 201, 188, 0.02)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0 180 C65 165, 120 154, 170 138 S285 112, 330 128 S420 88, 470 102 S520 72, 560 52 L560 260 L0 260 Z"
+                fill="url(#authChartFill)"
+              ></path>
+              <path
+                d="M0 180 C65 165, 120 154, 170 138 S285 112, 330 128 S420 88, 470 102 S520 72, 560 52"
+                fill="none"
+                stroke="#35c9bc"
+                stroke-width="4"
+                stroke-linecap="round"
+                filter="drop-shadow(0 0 12px rgba(53, 201, 188, 0.7))"
+              ></path>
+              <circle cx="560" cy="52" r="6" fill="#35c9bc"></circle>
+            </svg>
+          </div>
+
+          <div class="auth-metrics">
+            <div class="auth-metric">
+              <span>Alpha radar</span>
+              <strong>92%</strong>
+            </div>
+            <div class="auth-metric">
+              <span>Risk posture</span>
+              <strong>Balanced</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-panel">
+        <div class="auth-status" aria-live="polite">DEMO MODE</div>
+        <div class="auth-header">
+          <h2>Welcome back</h2>
+          <p>Access your financial intelligence workspace and decision review tools.</p>
+        </div>
+
+        <form class="auth-form" method="get" novalidate>
+          <label class="field-wrap">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="analyst@verdict.ai" />
+          </label>
+
+          <label class="field-wrap">
+            <span>Password</span>
+            <div class="password-stack">
+              <input type="password" name="password" placeholder="Enter your password" data-password-input />
+              <button type="button" class="password-toggle" data-password-toggle aria-label="Show password">Show</button>
+            </div>
+          </label>
+
+          <div class="auth-row">
+            <label class="remember-me">
+              <input type="checkbox" name="remember" />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="text-link" data-auth-message="Password reset is pending backend integration. Please use Continue as Demo for access in this prototype.">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="primary-btn auth-submit" data-email-signin>Sign in</button>
+          <button type="button" class="oauth-btn" data-provider="Google">Continue with Google</button>
+          <button type="button" class="oauth-btn oauth-btn-apple" data-provider="Apple">Continue with Apple</button>
+          <button type="button" class="secondary-btn demo-login" data-demo-login="true">Continue as Demo</button>
+        </form>
+
+        <div class="auth-alert" aria-live="polite"></div>
+
+        <div class="auth-footer-note">
+          <p>
+            Demo access is intentionally open and does not collect or store real passwords. All
+            portfolio and market data are fictional demo information.
+          </p>
+          <div class="small-links">
+            <a href="about.html" class="text-link">About us</a>
+            <span>|</span>
+            <a href="terms.html" class="text-link">Terms</a>
+            <span>|</span>
+            <a href="disclaimer.html" class="text-link">Disclaimer</a>
+            <span>|</span>
+            <a href="signup.html" class="text-link">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

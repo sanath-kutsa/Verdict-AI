@@ -1,0 +1,16 @@
+<svg width="760" height="220" viewBox="0 0 760 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="18" y="18" width="170" height="170" fill="#4FC3C8"/>
+  <g fill="#F5F7F7">
+    <rect x="62" y="42" width="82" height="28" rx="14" transform="rotate(45 103 56)"/>
+    <rect x="62" y="42" width="82" height="28" rx="14" transform="rotate(135 103 56)"/>
+    <rect x="62" y="42" width="82" height="28" rx="14" transform="rotate(225 103 56)"/>
+    <rect x="62" y="42" width="82" height="28" rx="14" transform="rotate(315 103 56)"/>
+  </g>
+  <g fill="#F5F7F7">
+    <path d="M103 26L110 40H96L103 26Z"/>
+    <path d="M103 194L96 180H110L103 194Z"/>
+    <path d="M26 103L40 96V110L26 103Z"/>
+    <path d="M180 103L166 110V96L180 103Z"/>
+  </g>
+  <text x="228" y="122" font-family="Segoe UI, Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="2" fill="#173E3D">VERDICT AI</text>
+</svg>
