@@ -1,7 +1,7 @@
 from services.market_evidence import build_market_evidence
 
 
-def build_bull_bear(investor, symbol="NOVA", bull_thesis=None, bear_thesis=None):
+def build_bull_bear(investor, symbol="NOVA", bull_thesis=None, bear_thesis=None, horizon=None):
     """Create balanced opposing cases from the exact same evidence snapshot."""
     evidence = build_market_evidence(investor, symbol)
     price = evidence["price_history"]
@@ -80,6 +80,7 @@ def build_bull_bear(investor, symbol="NOVA", bull_thesis=None, bear_thesis=None)
         "data_mode": "simulated",
         "result": {
             "symbol": evidence["symbol"],
+            "investment_horizon": str(horizon or "Not specified")[:80],
             "bull_case": bull_points,
             "bear_case": bear_points,
             "shared_evidence": evidence,
