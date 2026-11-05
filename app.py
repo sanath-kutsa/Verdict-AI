@@ -36,7 +36,7 @@ def get_investor_payload(payload=None):
     if isinstance(payload, dict) and isinstance(payload.get("investor"), dict):
         return payload["investor"]
 
-    user_id = payload.get("user_id") if isinstance(payload, dict) else None
+    user_id = payload.get("user_id") if hasattr(payload, "get") else None
     if user_id is not None:
         user = get_user(user_id)
         if not user:
@@ -246,7 +246,7 @@ def bull_vs_bear():
 @app.route("/api/earnings-language", methods=["GET", "POST"])
 def earnings_language():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
-    payload = payload if isinstance(payload, dict) else {}
+    payload = payload if hasattr(payload, "get") else {}
     investor = get_investor_payload(payload)
     return jsonify(analyse_earnings_language(
         investor,
