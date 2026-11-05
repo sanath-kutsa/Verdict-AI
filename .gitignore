@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment and secrets
+.env
+.venv/
+venv/
+
+# Local SQLite database
+instance/*.db
+instance/*.sqlite
+instance/*.sqlite3
