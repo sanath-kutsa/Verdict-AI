@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, render_template, request
 from services.demo_data import load_investor_data
 from services.database import (
@@ -12,6 +13,38 @@ from services.hype_radar import analyse_hype
 from services.move_autopsy import analyse_move
 from services.bull_bear import build_bull_bear
 from services.earnings_language import analyse_earnings_language
+from services.ai_analysis import AIAnalysisError, generate_feature_analysis
+
+def load_local_env():
+    """Load ignored local .env settings without requiring an extra package."""
+    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    if not os.path.isfile(env_path):
+        return
+    with open(env_path, "r", encoding="utf-8") as env_file:
+        for line in env_file:
+            value = line.strip()
+            if not value or value.startswith("#") or "=" not in value:
+                continue
+            key, setting = value.split("=", 1)
+            os.environ.setdefault(key.strip(), setting.strip().strip('"').strip("'"))
+
+
+load_local_env()
+
+
+def attach_ai_analysis(feature, payload, response):
+    """Attach Gemini interpretation to deterministic, auditable calculations."""
+    inputs = payload if isinstance(payload, dict) else {}
+    safe_inputs = {key: value for key, value in inputs.items() if key not in ("user_id", "investor")}
+    response["ai_analysis"] = generate_feature_analysis(
+        feature,
+        safe_inputs,
+        response.get("result", {}),
+    )
+    response["analysis_mode"] = "gemini_ai_plus_deterministic_calculations"
+    response["data_mode"] = "user_inputs_plus_local_sample_data"
+    return response
+
 
 app = Flask(__name__)
 init_db()
@@ -57,6 +90,11 @@ def handle_not_found(error):
 @app.errorhandler(ValueError)
 def handle_bad_request(error):
     return jsonify({"error": str(error)}), 400
+
+
+@app.errorhandler(AIAnalysisError)
+def handle_ai_error(error):
+    return jsonify({"error": str(error)}), 503
 
 
 @app.get("/")
@@ -180,7 +218,7 @@ def investor_dna():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     assessment = payload if request.method == "POST" else None
-    return jsonify(analyse_investor_dna(investor, assessment))
+    return jsonify(attach_ai_analysis("investor_dna", payload, analyse_investor_dna(investor, assessment)))
 
 
 @app.route("/api/circuit-breaker", methods=["GET", "POST"])
@@ -206,7 +244,7 @@ def circuit_breaker():
             "price": request.args.get("price", default=130, type=float),
             "reason": request.args.get("reason", "Bought after a sharp price jump; feared missing out")
         }
-    return jsonify(analyse_circuit_breaker(investor, proposed_trade or {}))
+    return jsonify(attach_ai_analysis("circuit_breaker", payload, analyse_circuit_breaker(investor, proposed_trade or {})))
 
 
 @app.route("/api/stress-test", methods=["GET", "POST"])
@@ -221,19 +259,20 @@ def stress_test():
     else:
         change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
         position = None
-    return jsonify(run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None))
+    return jsonify(attach_ai_analysis("stress_test", payload, run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None)))
 
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
 def regret_replay():
     payload = (request.get_json(silent=True) if request.method == "POST" else request.args) or {}
     investor = get_investor_payload(payload)
-    return jsonify(replay_sells(
+    result = replay_sells(
         investor,
         trade_type=payload.get("trade_type"),
         lookback_days=payload.get("lookback_days"),
         review_note=payload.get("review_note"),
-    ))
+    )
+    return jsonify(attach_ai_analysis("regret_replay", payload, result))
 
 
 @app.route("/api/hype-radar", methods=["GET", "POST"])
@@ -245,13 +284,14 @@ def hype_radar():
         if isinstance(payload, dict) and request.method == "POST"
         else request.args.get("spike_multiplier", default=2.0, type=float)
     )
-    return jsonify(analyse_hype(
+    result = analyse_hype(
         investor,
         multiplier,
         theme=payload.get("theme") if isinstance(payload, dict) else None,
         signal_source=payload.get("signal_source") if isinstance(payload, dict) else None,
         narrative=payload.get("narrative") if isinstance(payload, dict) else None,
-    ))
+    )
+    return jsonify(attach_ai_analysis("hype_radar", payload, result))
 
 
 @app.route("/api/move-autopsy", methods=["GET", "POST"])
@@ -263,7 +303,7 @@ def move_autopsy():
         if isinstance(payload, dict) and request.method == "POST"
         else request.args.get("symbol", "NOVA")
     )
-    return jsonify(analyse_move(
+    result = analyse_move(
         investor,
         symbol,
         move_type=payload.get("move_type") if isinstance(payload, dict) else None,
@@ -271,7 +311,8 @@ def move_autopsy():
         price_change_pct=payload.get("price_change_pct") if isinstance(payload, dict) else None,
         volume_multiple=payload.get("volume_multiple") if isinstance(payload, dict) else None,
         catalyst=payload.get("catalyst") if isinstance(payload, dict) else None,
-    ))
+    )
+    return jsonify(attach_ai_analysis("move_autopsy", payload, result))
 
 
 @app.route("/api/bull-vs-bear", methods=["GET", "POST"])
@@ -285,7 +326,7 @@ def bull_vs_bear():
     )
     bull_thesis = payload.get("bull_thesis") if isinstance(payload, dict) else None
     bear_thesis = payload.get("bear_thesis") if isinstance(payload, dict) else None
-    return jsonify(build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None))
+    return jsonify(attach_ai_analysis("bull_vs_bear", payload, build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None)))
 
 
 @app.route("/api/earnings-language", methods=["GET", "POST"])
@@ -293,12 +334,13 @@ def earnings_language():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
     payload = payload if hasattr(payload, "get") else {}
     investor = get_investor_payload(payload)
-    return jsonify(analyse_earnings_language(
+    result = analyse_earnings_language(
         investor,
         company=payload.get("company") or request.args.get("company"),
         transcript_text=payload.get("transcript_text"),
         quarter=payload.get("quarter"),
-    ))
+    )
+    return jsonify(attach_ai_analysis("earnings_analysis", payload, result))
 
 
 if __name__ == "__main__":
