@@ -34,7 +34,11 @@ Feature endpoints use this structure:
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/api/health` | Check whether the backend is running |
-| GET | `/api/dashboard` | Dashboard summary and recent trades |
+| GET | `/api/dashboard` | Dashboard summary and bundled demo trades |
+| POST | `/api/users/guest` | Create a local simulated demo user |
+| GET | `/api/users/<user_id>` | Get a demo user profile |
+| GET, POST | `/api/users/<user_id>/trades` | Read or save that user's simulated trades |
+| GET | `/api/users/<user_id>/portfolio` | Get simulated cash balance and holdings |
 | GET, POST | `/api/investor-dna` | Describe patterns in the supplied trade history |
 | GET, POST | `/api/circuit-breaker` | Compare a proposed simulated trade with recorded behaviour |
 | GET, POST | `/api/stress-test` | Apply a hypothetical percentage change to open positions |
@@ -151,3 +155,82 @@ Or submit custom transcript text:
 - All calculations and phrase checks are deterministic Python logic at this stage. Gemini integration is not part of these three feature engines yet.
 - Earnings language flags are communication-clarity signals only. They do not detect lies or prove dishonesty.
 - These tools are educational demonstrations, not financial advice.
+
+## Simulated user accounts and persistence
+
+The backend creates a local SQLite database automatically at `instance/verdict_ai.db`.
+No database server or extra Python package is required. The database file is created
+when Flask starts and is intentionally excluded from Git.
+
+Create a demo user:
+
+```http
+POST /api/users/guest
+Content-Type: application/json
+
+{"name":"Demo User"}
+```
+
+The response includes a numeric `user.id`. Keep it in the frontend session while
+the user is using the demo.
+
+Save a simulated trade:
+
+```http
+POST /api/users/1/trades
+Content-Type: application/json
+
+{
+  "symbol": "NOVA",
+  "action": "BUY",
+  "quantity": 5,
+  "price": 130,
+  "reason": "Testing a planned entry"
+}
+```
+
+Read trades and portfolio:
+
+```text
+GET /api/users/1/trades
+GET /api/users/1/portfolio
+```
+
+Pass the user's ID to feature endpoints so they analyse that user's saved trades:
+
+```text
+GET /api/investor-dna?user_id=1
+GET /api/regret-replay?user_id=1
+```
+
+Each new demo user starts with ₹1,00,000 in simulated cash. The API checks that a
+BUY does not exceed available cash and a SELL does not exceed the user's holdings.
+Market history, fundamentals, social mentions and earnings examples still come
+from the bundled fictional dataset.
+
+**Prototype security note:** These demo-user endpoints do not yet authenticate
+the person making the request. They are for a local hackathon prototype only.
+Do not expose them as a public multi-user service until Google sign-in or another
+server-verified authentication method is connected and every user-specific route
+checks the authenticated user on the server.
+
+## Google sign-in setup (next integration step)
+
+The database has a `google_sub` field ready to associate a verified Google account
+with a user. The actual Google sign-in flow is not connected yet.
+
+1. Open Google Cloud Console and create/select a project.
+2. Configure the OAuth consent screen / Google Auth Platform branding and audience.
+3. Create an OAuth client ID of type **Web application**.
+4. Add the local JavaScript origin used by the app (for example
+   `http://localhost:5000` and/or `http://127.0.0.1:5000`).
+5. When the frontend is ready, add Google Identity Services and use the client ID
+   in the browser sign-in button.
+6. Send the returned ID token to a Flask authentication endpoint. The backend
+   must verify the token's signature, issuer, audience and expiry before calling
+   the database's Google-user lookup/create function.
+
+The Google client ID is not a password, but a client secret or signing credentials
+must never be placed in frontend JavaScript. Do not trust an email or user ID sent
+by the browser as proof of identity. Google sign-in should be completed before
+making these user-specific endpoints publicly accessible.
