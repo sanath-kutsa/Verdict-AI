@@ -39,12 +39,30 @@ def run_stress_test(investor, scenario_change_pct=-10.0):
     rows = []
     current_total = 0.0
     stressed_total = 0.0
+    trades_by_symbol = defaultdict(list)
+    for trade in investor.get("trades", []):
+        trades_by_symbol[str(trade.get("symbol", "")).upper()].append(trade)
+
     for symbol, quantity in sorted(positions.items()):
         observations = history.get(symbol, [])
-        if not observations:
-            continue
-        latest = max(observations, key=lambda item: str(item.get("date", "")))
-        latest_price = float(latest.get("close", 0) or 0)
+        reference_source = "bundled_simulated_price_history"
+        if observations:
+            latest = max(observations, key=lambda item: str(item.get("date", "")))
+            latest_price = float(latest.get("close", 0) or 0)
+            reference_date = latest.get("date")
+        else:
+            # A user's own last simulated execution is a transparent fallback
+            # when the bundled market sample has no quote for that symbol.
+            latest_trade = max(
+                trades_by_symbol.get(symbol, []),
+                key=lambda item: str(item.get("date", "")),
+                default=None,
+            )
+            if not latest_trade:
+                continue
+            latest_price = float(latest_trade.get("price", 0) or 0)
+            reference_date = latest_trade.get("date")
+            reference_source = "last_recorded_simulated_trade_price"
         if latest_price <= 0:
             continue
         current_value = quantity * latest_price
@@ -55,7 +73,8 @@ def run_stress_test(investor, scenario_change_pct=-10.0):
         rows.append({
             "symbol": symbol,
             "quantity": round(quantity, 4),
-            "reference_date": latest.get("date"),
+            "reference_date": reference_date,
+            "reference_source": reference_source,
             "simulated_reference_price": round(latest_price, 2),
             "hypothetical_price": round(stressed_price, 2),
             "current_simulated_value": round(current_value, 2),

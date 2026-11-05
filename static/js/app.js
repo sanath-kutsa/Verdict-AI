@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const watchlist = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || '[]');
-    const items = watchlist.length ? watchlist : ['APLX', 'NVDA', 'TERRA'];
+    const items = watchlist.length ? watchlist : ['RELIANCE', 'TCS', 'INFY'];
     const prices = demoStocks.filter((stock) => items.includes(stock.symbol));
 
     if (collectionTitle) {
@@ -304,16 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const defaultWatchlist = ['RELIANCE', 'TCS'];
-    const defaultTransactions = [
-      { symbol: 'RELIANCE', side: 'Buy', qty: 15, value: 44679.00, date: 'Today' },
-      { symbol: 'INFY', side: 'Sell', qty: 8, value: 12499.60, date: 'Yesterday' }
-    ];
+    const defaultWatchlist = ['RELIANCE', 'TCS', 'INFY'];
+    const defaultTransactions = [];
 
     const getWatchlist = () => {
       try {
-        const saved = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || '[]');
-        return saved.length ? saved : defaultWatchlist;
+        const raw = localStorage.getItem(WATCHLIST_KEY);
+        return raw === null ? defaultWatchlist : JSON.parse(raw);
       } catch (error) {
         return defaultWatchlist;
       }
@@ -324,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const getTransactions = () => {
       try {
         const saved = JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]');
-        return saved.length ? saved : defaultTransactions;
+        return saved;
       } catch (error) {
         return defaultTransactions;
       }
@@ -335,6 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderTransactions = () => {
       const transactions = getTransactions();
       if (!transactionList) return;
+      if (!transactions.length) { transactionList.innerHTML = '<li class="transaction-item">No saved demo trades yet.</li>'; return; }
       transactionList.innerHTML = transactions.slice(0, 4).map((item) => `
         <li class="transaction-item">
           <div>
@@ -392,6 +390,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderWatchlist = () => {
       const items = getWatchlist();
       if (!watchlistList) return;
+      if (!items.length) {
+        watchlistList.innerHTML = '<li class="watchlist-item">Your watchlist is empty. Add a symbol from the stock cards.</li>';
+        return;
+      }
       watchlistList.innerHTML = items.map((symbol) => {
         const stock = demoStocks.find((item) => item.symbol === symbol) || demoStocks[0];
         return `
@@ -509,10 +511,33 @@ document.addEventListener('DOMContentLoaded', () => {
       tradeForm.addEventListener('submit', handleTradeSubmit);
     }
 
-    document.querySelectorAll('.range-btn').forEach((button) => {
+    const tradeReset = document.getElementById('trade-reset');
+    if (tradeReset) {
+      tradeReset.addEventListener('click', () => {
+        if (tradeSymbol) tradeSymbol.value = 'RELIANCE';
+        if (tradeSide) tradeSide.value = 'buy';
+        if (tradeQty) tradeQty.value = '10';
+        updateOrderValue();
+        if (confirmationBox) {
+          confirmationBox.textContent = 'Order form reset. No transaction was submitted.';
+          confirmationBox.classList.add('visible');
+        }
+      });
+    }
+
+    document.querySelectorAll('.range-row .range-btn').forEach((button) => {
       button.addEventListener('click', () => {
-        document.querySelectorAll('.range-btn').forEach((item) => item.classList.remove('active'));
+        document.querySelectorAll('.range-row .range-btn').forEach((item) => item.classList.remove('active'));
         button.classList.add('active');
+        const chartContainer = document.querySelector('.stock-chart-box[data-candlestick]');
+        if (chartContainer) {
+          chartContainer.setAttribute('data-range', button.getAttribute('data-range') || '1M');
+          renderCandlestickChart(
+            chartContainer,
+            chartContainer.getAttribute('data-candlestick') || 'RELIANCE',
+            button.getAttribute('data-range') || '1M'
+          );
+        }
       });
     });
 
@@ -599,6 +624,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const isLogoutLink = item.dataset.logout === 'true';
       if (isLogoutLink) {
         localStorage.removeItem(DEMO_MODE_KEY);
+        localStorage.removeItem('verdict-user-id');
+        localStorage.removeItem('verdict-user-name');
+        localStorage.removeItem('verdict-selected-symbol');
         localStorage.removeItem(WATCHLIST_KEY);
         localStorage.removeItem(TRANSACTIONS_KEY);
         return;
@@ -685,16 +713,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const base = demoCandleSeeds[symbol] || demoCandleSeeds['NIFTY 50'];
     const total = 40;
     const entries = [];
-    const stepMinutes = rangeLabel === '1D' ? 30 : rangeLabel === '1W' ? 90 : rangeLabel === '1M' ? 180 : 360;
+    const stepMinutesByRange = { '1D': 15, '1W': 240, '1M': 1080, '3M': 4320, '6M': 8640, '1Y': 12960 };
+    const stepMinutes = stepMinutesByRange[rangeLabel] || stepMinutesByRange['1M'];
 
     for (let i = 0; i < total; i += 1) {
-      const open = base[i] * (1 + ((i % 5) - 2) * 0.004);
-      const neutralCandle = i % 9 === 0;
-      const close = neutralCandle
-        ? open
-        : base[(i + 8) % base.length] * (1 + ((i % 6) - 2.5) * 0.0045);
-      const high = Math.max(open, close) * (1 + 0.008 + (i % 4) * 0.004);
-      const low = Math.min(open, close) * (1 - 0.008 - (i % 4) * 0.004);
+      // Adjacent sample values create genuine advances and pullbacks.
+      const open = base[i % base.length];
+      const close = base[(i + 1) % base.length];
+      const wick = 0.004 + (i % 4) * 0.002;
+      const high = Math.max(open, close) * (1 + wick);
+      const low = Math.min(open, close) * (1 - wick);
       const time = new Date(Date.now() - (total - i) * stepMinutes * 60 * 1000);
       entries.push({
         time: Math.floor(time.getTime() / 1000),
