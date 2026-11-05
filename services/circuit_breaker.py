@@ -27,6 +27,8 @@ def analyse_circuit_breaker(investor, proposed_trade=None):
     reason = str(proposal.get("reason", "A simulated momentum entry"))
     quantity = proposal.get("quantity", 1)
     price = proposal.get("price")
+    emotional_state = str(proposal.get("emotional_state", "Not supplied"))
+    confidence = str(proposal.get("confidence", "Not supplied"))
 
     warnings = []
     if action not in ("BUY", "SELL"):
@@ -70,6 +72,18 @@ def analyse_circuit_breaker(investor, proposed_trade=None):
             "code": "MOMENTUM_OR_HYPE_ENTRY",
             "severity": "review",
             "message": "The stated reason resembles momentum or online-hype entries in the demo history."
+        })
+    if emotional_state.lower() in ("excited", "anxious", "frustrated", "fearful"):
+        flags.append({
+            "code": "EMOTIONAL_STATE_REPORTED",
+            "severity": "notice",
+            "message": f"You reported feeling {emotional_state.lower()} while considering this trade; consider whether that state is affecting the decision."
+        })
+    if confidence.lower() == "very high":
+        flags.append({
+            "code": "HIGH_CONFIDENCE_CHECK",
+            "severity": "notice",
+            "message": "Very high confidence was reported. Check what evidence could disprove the trade thesis."
         })
     if action == "SELL" and _contains_any(reason, FEAR_TERMS):
         flags.append({
@@ -115,7 +129,9 @@ def analyse_circuit_breaker(investor, proposed_trade=None):
             "action": action,
             "quantity": quantity,
             "price": price,
-            "reason": reason
+            "reason": reason,
+            "emotional_state": emotional_state,
+            "confidence": confidence
         },
         "risk_level": risk_level,
         "flags": flags,
