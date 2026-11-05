@@ -13,7 +13,6 @@ from services.hype_radar import analyse_hype
 from services.move_autopsy import analyse_move
 from services.bull_bear import build_bull_bear
 from services.earnings_language import analyse_earnings_language
-from services.ai_analysis import AIAnalysisError, generate_feature_analysis
 
 def load_local_env():
     """Load ignored local .env settings without requiring an extra package."""
@@ -32,17 +31,10 @@ def load_local_env():
 load_local_env()
 
 
-def attach_ai_analysis(feature, payload, response):
-    """Attach Gemini interpretation to deterministic, auditable calculations."""
-    inputs = payload if isinstance(payload, dict) else {}
-    safe_inputs = {key: value for key, value in inputs.items() if key not in ("user_id", "investor")}
-    response["ai_analysis"] = generate_feature_analysis(
-        feature,
-        safe_inputs,
-        response.get("result", {}),
-    )
-    response["analysis_mode"] = "gemini_ai_plus_deterministic_calculations"
-    response["data_mode"] = "user_inputs_plus_local_sample_data"
+def attach_local_analysis(feature, payload, response):
+    """Keep every workflow fully usable offline with transparent local calculations."""
+    response["analysis_mode"] = "local_rule_based_and_deterministic"
+    response["data_mode"] = response.get("data_mode", "simulated")
     return response
 
 
@@ -92,10 +84,6 @@ def handle_bad_request(error):
     return jsonify({"error": str(error)}), 400
 
 
-@app.errorhandler(AIAnalysisError)
-def handle_ai_error(error):
-    return jsonify({"error": str(error)}), 503
-
 
 @app.get("/")
 def home():
@@ -126,8 +114,8 @@ def health():
     return jsonify({
         "status": "ok",
         "message": "Verdict AI backend is running.",
-        "ai_configured": bool(os.environ.get("GEMINI_API_KEY", "").strip()),
-        "ai_model": os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"),
+        "ai_configured": False,
+        "analysis_mode": "local_rule_based_and_deterministic",
     })
 
 
@@ -223,7 +211,7 @@ def investor_dna():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     assessment = payload if request.method == "POST" else None
-    return jsonify(attach_ai_analysis("investor_dna", payload, analyse_investor_dna(investor, assessment)))
+    return jsonify(attach_local_analysis("investor_dna", payload, analyse_investor_dna(investor, assessment)))
 
 
 @app.route("/api/circuit-breaker", methods=["GET", "POST"])
