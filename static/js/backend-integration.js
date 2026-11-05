@@ -149,6 +149,147 @@
       return { portfolio: portfolioData, trades, holdings, invested };
     };
 
+
+    const initFeatureWorkspace = () => {
+      const root = document.querySelector(".feature-panel");
+      if (!root) return;
+      const specs = {
+        investor_dna: {
+          title:"Investor DNA assessment", intro:"Combine your saved paper-trade history with your own answers. The result describes observed patterns, not your personality.",
+          endpoint:"/api/investor-dna", fields:[
+            ["risk_style","Risk tolerance","select",["Conservative","Moderate","Aggressive"]],
+            ["bias","Most common decision bias","select",["FOMO / momentum chasing","Loss aversion","Overconfidence","Confirmation bias","No clear pattern"]],
+            ["goal","Primary investing goal","select",["Long-term wealth creation","Capital preservation","Short-term trading","Learning and experimentation"]],
+            ["user_note","Describe how you make decisions","textarea","I sometimes buy after a sharp price rise because I worry about missing out."]
+          ]
+        },
+        circuit_breaker: {
+          title:"Proposed trade review", intro:"Enter the trade you are considering. Verdict compares its stated reason with your saved paper-trade behaviour and transparent keyword rules.",
+          endpoint:"/api/circuit-breaker", fields:[
+            ["symbol","Stock symbol","text","RELIANCE"],
+            ["exchange","Exchange","select",["NSE","BSE"]],
+            ["action","Intended action","select",["BUY","SELL"]],
+            ["quantity","Quantity","number","10"],
+            ["price","Planned price (₹)","number","100"],
+            ["reason","Why are you considering this trade?","textarea","The stock is trending online and I am worried about missing the breakout."],
+            ["emotional_state","Current emotional state","select",["Calm","Excited","Anxious","Frustrated","Fearful","Unsure"]],
+            ["confidence","Confidence level","select",["Low","Moderate","High","Very high"]]
+          ]
+        },
+        stress_test: {
+          title:"Portfolio stress scenario", intro:"Choose a holding and apply a hypothetical price shock. Enter the symbol, quantity and reference price explicitly; no live quote is assumed.",
+          endpoint:"/api/stress-test", fields:[
+            ["symbol","Stock symbol","text","RELIANCE"],
+            ["quantity","Quantity held","number","10"],
+            ["current_price","Reference price per share (₹)","number","1000"],
+            ["scenario_change_pct","Hypothetical price change (%)","number","-20"],
+            ["assumption","Scenario assumptions (optional)","textarea","Assume a broad market sell-off and weaker sector demand."]
+          ]
+        },
+        regret_replay: {
+          title:"Trade-history replay", intro:"Replay eligible SELL transactions saved in your account against the next available observation in the bundled sample history. No hindsight price will be invented.",
+          endpoint:"/api/regret-replay", fields:[
+            ["trade_type","Trade type filter","select",["All sell decisions","Momentum exits","Fear-driven exits"]],
+            ["lookback_days","Lookback period (days)","number","90"],
+            ["review_note","What would you like to reflect on?","textarea","I exited because of short-term fear. I want to understand what the later sample showed."]
+          ]
+        },
+        hype_radar: {
+          title:"Narrative and hype analysis", intro:"Paste the narrative or claims you are seeing. The backend checks language signals and, separately, any available simulated mention history. It does not fetch social media.",
+          endpoint:"/api/hype-radar", fields:[
+            ["theme","Company or theme","text","AI infrastructure"],
+            ["signal_source","Where did you see this?","select",["News","Retail chatter","Analyst commentary","Social media","Other"]],
+            ["narrative","Paste the narrative or claims","textarea","Every AI company is going to become extremely profitable. Investors are rushing in because demand will grow indefinitely."],
+            ["spike_multiplier","Mention-spike threshold (x)","number","2"]
+          ]
+        },
+        move_autopsy: {
+          title:"Price-move autopsy", intro:"Describe a move and provide the observations you actually have. The analysis separates supplied evidence from interpretation.",
+          endpoint:"/api/move-autopsy", fields:[
+            ["symbol","Stock symbol","text","RELIANCE"],
+            ["move_type","Move type","select",["Breakout","Gap up","Gap down","Rally","Sell-off","Reversal","Fade"]],
+            ["price_change_pct","Observed price change (%)","number","5"],
+            ["volume_multiple","Volume vs average (x)","number","2.1"],
+            ["catalyst","Known catalyst (optional)","text","Quarterly results"],
+            ["move_context","What happened?","textarea","The stock rose around 5% after results, with volume about 2.1 times its recent average."]
+          ]
+        },
+        bull_bear: {
+          title:"Bull vs Bear thesis comparison", intro:"Provide both sides of the argument. Verdict compares the claims and highlights assumptions that need evidence.",
+          endpoint:"/api/bull-vs-bear", fields:[
+            ["symbol","Stock symbol / company","text","RELIANCE"],
+            ["horizon","Investment horizon","select",["Short term","6 to 12 months","1 to 3 years","3+ years"]],
+            ["bull_thesis","Bull thesis","textarea","Demand is growing, the company is investing in new capacity, and revenue could expand over the next few years."],
+            ["bear_thesis","Bear thesis","textarea","Valuation may already reflect optimistic growth, while higher costs could pressure margins."]
+          ]
+        },
+        earnings_analysis: {
+          title:"Earnings transcript analysis", intro:"Paste an earnings-call excerpt or management commentary. The backend flags cautious or vague wording and explains why it was flagged. It does not verify financial claims.",
+          endpoint:"/api/earnings-language", fields:[
+            ["company","Company name / symbol","text","RELIANCE"],
+            ["quarter","Reporting quarter","text","Q2 FY2026"],
+            ["transcript_text","Earnings transcript / management commentary","textarea","Revenue increased by 25% year over year. Net profit increased by 8%. Operating expenses rose due to research and development investments. Management expects demand to remain strong, but supply-chain costs could affect margins."]
+          ]
+        }
+      };
+      const spec = specs[page];
+      if (!spec) return;
+      const fieldHtml = spec.fields.map(([name,label,type,options]) => {
+        const isTextArea = type === "textarea";
+        const control = isTextArea
+          ? '<textarea name="'+name+'" required rows="4" placeholder="'+(typeof options==="string"?esc(options):"")+'"></textarea>'
+          : type === "select"
+            ? '<select name="'+name+'" required>'+options.map((v,i)=>'<option value="'+esc(v)+'" '+(i===0?'selected':'')+'>'+esc(v)+'</option>').join("")+'</select>'
+            : '<input name="'+name+'" type="'+type+'" '+(type==="number"?'step="any"':'')+' '+(name==="quantity"?'min="0.0001"':'')+' required placeholder="'+esc(options||"")+'">';
+        return '<label class="feature-input"><span>'+esc(label)+'</span>'+control+'</label>';
+      }).join("");
+      const formId = "verdict-feature-form";
+      const outputId = "verdict-feature-output";
+      const left = '<div class="feature-card"><h3>'+esc(spec.title)+'</h3><p>'+esc(spec.intro)+'</p><form id="'+formId+'" class="feature-form"><div class="input-grid">'+fieldHtml+'</div><button type="submit" class="primary-btn">Run analysis</button><p class="confirmation-box" id="feature-form-message" aria-live="polite"></p></form></div>';
+      const right = '<div class="feature-card result-stack" id="'+outputId+'" aria-live="polite"><span class="score-pill">Awaiting your input</span><h3>Your results will appear here</h3><p>Complete the form and select Run analysis. No pre-filled demonstration result is shown.</p></div>';
+      const grid = root.querySelector(".feature-grid");
+      if (grid) grid.innerHTML = left + right;
+      const form = document.getElementById(formId);
+      const output = document.getElementById(outputId);
+      const message = document.getElementById("feature-form-message");
+      const submit = form.querySelector('[type="submit"]');
+      const renderValue = (value) => {
+        if (value == null || value === "") return "Not available";
+        if (typeof value === "object") return Array.isArray(value) ? value.map(renderValue).join("; ") : Object.entries(value).map(([k,v])=>k.replaceAll("_"," ")+": "+renderValue(v)).join(" · ");
+        return String(value);
+      };
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!requireUser(message)) return;
+        const payload = Object.fromEntries(new FormData(form).entries());
+        payload.user_id = userId;
+        for (const [key,value] of Object.entries(payload)) {
+          if (key !== "user_id" && form.elements.namedItem(key)?.type === "number") payload[key] = Number(value);
+        }
+        if (page === "circuit_breaker") {
+          payload.proposed_trade = {symbol:payload.symbol, action:payload.action, quantity:payload.quantity, price:payload.price, reason:payload.reason, emotional_state:payload.emotional_state, confidence:payload.confidence};
+        }
+        setBusy(submit,true,"Running analysis…");
+        output.innerHTML = '<span class="score-pill">Processing</span><h3>Analysing your submitted information…</h3><p>Waiting for the backend response.</p>';
+        try {
+          const data = await api(spec.endpoint,payload);
+          const r = data.result || {};
+          const findings = (data.explanation?.key_findings || []).map(x=>'<li>'+esc(x)+'</li>').join("");
+          const metrics = Object.entries(r).filter(([k,v])=>!["evidence","shared_evidence","symbols","replays","positions","flags","drivers","bull_case","bear_case","closed_trade_sample","open_positions"].includes(k) && (typeof v!=="object" || v===null)).map(([k,v])=>'<div class="list-item"><span>'+esc(k.replaceAll("_"," "))+'</span><strong>'+esc(renderValue(v))+'</strong></div>').join("");
+          const lists = [];
+          for (const key of ["flags","drivers","positions","replays","bull_case","bear_case","symbols"]) {
+            const value = r[key];
+            if (Array.isArray(value) && value.length) lists.push('<h4>'+esc(key.replaceAll("_"," "))+'</h4><ul class="risk-list">'+value.map(item=>'<li>'+esc(renderValue(item))+'</li>').join("")+'</ul>');
+          }
+          output.innerHTML = '<span class="score-pill success">Analysis complete</span><h3>'+esc(data.explanation?.summary || "Backend analysis completed.")+'</h3><div class="list-stack">'+metrics+'</div>'+lists.join("")+'<h4>Key findings</h4><ul class="risk-list">'+findings+'</ul><p class="demo-data-label">'+esc(data.data_mode || "User-supplied input")+' · '+esc(data.explanation?.confidence || "See limitations")+'</p><details><summary>Limitations and methodology</summary><ul class="risk-list">'+(data.explanation?.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></details><details><summary>Raw backend result</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(JSON.stringify(r,null,2))+'</pre></details>';
+          notice(message,"Analysis completed. Results below are from the backend response.",false);
+        } catch(error) {
+          output.innerHTML = '<span class="score-pill warning">Analysis failed</span><h3>'+esc(error.message)+'</h3><p>Check the input and Flask server, then try again.</p>';
+          notice(message,error.message,true);
+        } finally { setBusy(submit,false); }
+      });
+    };
+
     const initDashboard = () => {
       ensureDashboardSnapshot();
       const msg = document.getElementById("dash-api-message");
@@ -499,9 +640,7 @@
     if (page === "dashboard") initDashboard();
     if (page === "invest") initInvest();
     if (page === "portfolio" && userId) refreshAccount().catch(error => console.warn(error));
-    if (page === "circuit_breaker") initCircuitBreaker();
-    if (page === "investor_dna") initInvestorDNA();
-    if (["stress_test", "regret_replay", "hype_radar", "move_autopsy", "bull_bear", "earnings_analysis"].includes(page)) initOtherFeature();
+    if (["circuit_breaker", "investor_dna", "stress_test", "regret_replay", "hype_radar", "move_autopsy", "bull_bear", "earnings_analysis"].includes(page)) initFeatureWorkspace();
     if (page === "watchlist") initWatchlist();
     if (page === "profile" || page === "settings") initAccountPages();
   };
