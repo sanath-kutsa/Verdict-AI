@@ -1,11 +1,16 @@
-from datetime import date
+from datetime import date, timedelta
 
 
-def replay_sells(investor):
+def replay_sells(investor, trade_type=None, lookback_days=None, review_note=None):
     """Compare each simulated sell with the next later available sample price."""
     history = investor.get("price_history", {})
     replays = []
     total_difference = 0.0
+    selected_type = str(trade_type or "All sell decisions")
+    try:
+        cutoff = date.today() - timedelta(days=max(1, int(lookback_days))) if lookback_days else None
+    except (TypeError, ValueError):
+        cutoff = None
 
     for trade in investor.get("trades", []):
         if str(trade.get("action", "")).upper() != "SELL":
@@ -19,6 +24,14 @@ def replay_sells(investor):
         except (TypeError, ValueError):
             continue
         if sell_price <= 0 or quantity <= 0:
+            continue
+        if cutoff and sell_date < cutoff:
+            continue
+        reason = str(trade.get("reason", ""))
+        reason_lower = reason.lower()
+        if selected_type == "Momentum exits" and not any(term in reason_lower for term in ("momentum", "breakout", "fomo", "trend", "strength")):
+            continue
+        if selected_type == "Fear-driven exits" and not any(term in reason_lower for term in ("fear", "panic", "worried", "dip", "loss")):
             continue
 
         later = []
@@ -40,6 +53,7 @@ def replay_sells(investor):
         replays.append({
             "trade_id": trade.get("id"),
             "symbol": symbol,
+            "reason": reason,
             "sell_date": sell_date_text,
             "sell_price": round(sell_price, 2),
             "next_observation_date": replay_date.isoformat(),
@@ -59,7 +73,12 @@ def replay_sells(investor):
             "currency": currency,
             "replayed_sell_count": len(replays),
             "hypothetical_difference_total": round(total_difference, 2),
-            "replays": replays
+            "replays": replays,
+            "filters": {
+                "trade_type": selected_type,
+                "lookback_days": int(lookback_days) if str(lookback_days or "").strip().isdigit() else None,
+                "review_note": str(review_note or "")[:500],
+            }
         },
         "explanation": {
             "summary": "A hindsight comparison of each eligible sell with the next later price observation available in the fictional dataset.",
