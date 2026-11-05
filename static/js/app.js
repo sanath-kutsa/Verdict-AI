@@ -896,3 +896,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initCircuitBreakerPage();
   initFeatureState();
 });
+
+
+// Load the API-connected frontend layer after the existing UI initializers.
+(() => {
+  const script = document.createElement('script');
+  script.src = '/static/js/backend-integration.js';
+  script.defer = true;
+  document.body.appendChild(script);
+})();
