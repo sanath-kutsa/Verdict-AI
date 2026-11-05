@@ -13,7 +13,7 @@ def _percent(part, whole):
     return round((part / whole) * 100, 1) if whole else 0.0
 
 
-def analyse_investor_dna(investor):
+def analyse_investor_dna(investor, self_assessment=None):
     """Calculate observable trading habits from fictional trade records.
 
     This describes patterns in the supplied sample only. It does not predict
@@ -123,7 +123,15 @@ def analyse_investor_dna(investor):
     if not findings:
         findings.append("There is not enough descriptive evidence to identify a repeated behaviour.")
 
+    assessment = self_assessment or {}
+    assessment_findings = []
+    for key, label in (("risk_style", "Self-reported risk tolerance"), ("bias", "Self-reported decision bias"), ("goal", "Stated investing goal")):
+        if assessment.get(key):
+            assessment_findings.append(f"{label}: {str(assessment[key])[:160]}")
+    if assessment.get("user_note"):
+        assessment_findings.append("User reflection: " + str(assessment["user_note"])[:500])
     result = {
+        "self_assessment": {key: str(value)[:500] for key, value in assessment.items()},
         "investor_name": investor.get("investor_name", "Demo Investor"),
         "currency": investor.get("currency", "INR"),
         "sample_size": len(trades),
@@ -166,8 +174,8 @@ def analyse_investor_dna(investor):
         "data_mode": "simulated",
         "result": result,
         "explanation": {
-            "summary": "A descriptive profile of recorded trading habits, calculated from the simulated trade history.",
-            "key_findings": findings,
+            "summary": "A descriptive profile combining recorded paper-trade behaviour with the self-assessment supplied in this request.",
+            "key_findings": findings + assessment_findings,
             "limitations": limitations,
             "confidence": "Descriptive calculation on the supplied sample; not predictive."
         }
