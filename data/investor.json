@@ -1,0 +1,70 @@
+{
+  "investor_name": "Alex Morgan",
+  "profile_note": "Fictional demo investor. All records and values are simulated.",
+  "currency": "INR",
+  "trades": [
+    {"id": "T001", "symbol": "NOVA", "action": "BUY", "quantity": 10, "price": 100, "date": "2026-09-01", "reason": "Initial research"},
+    {"id": "T002", "symbol": "NOVA", "action": "SELL", "quantity": 10, "price": 108, "date": "2026-09-08", "reason": "Booked a small gain"},
+    {"id": "T003", "symbol": "ORBIT", "action": "BUY", "quantity": 8, "price": 250, "date": "2026-09-10", "reason": "Positive online discussion"},
+    {"id": "T004", "symbol": "ORBIT", "action": "SELL", "quantity": 8, "price": 232, "date": "2026-09-12", "reason": "Concern after a price dip"},
+    {"id": "T005", "symbol": "NOVA", "action": "BUY", "quantity": 12, "price": 125, "date": "2026-09-18", "reason": "Price was rising quickly"},
+    {"id": "T006", "symbol": "NOVA", "action": "BUY", "quantity": 6, "price": 132, "date": "2026-09-19", "reason": "Did not want to miss the move"},
+    {"id": "T007", "symbol": "NOVA", "action": "SELL", "quantity": 18, "price": 119, "date": "2026-09-22", "reason": "Concern after a price dip"},
+    {"id": "T008", "symbol": "PULSE", "action": "BUY", "quantity": 15, "price": 80, "date": "2026-09-25", "reason": "Company research"},
+    {"id": "T009", "symbol": "PULSE", "action": "SELL", "quantity": 15, "price": 88, "date": "2026-10-02", "reason": "Booked a gain"},
+    {"id": "T010", "symbol": "ORBIT", "action": "BUY", "quantity": 10, "price": 210, "date": "2026-10-05", "reason": "Price was rising quickly"}
+  ],
+  "price_history": {
+    "NOVA": [
+      {"date": "2026-09-01", "close": 100},
+      {"date": "2026-09-08", "close": 108},
+      {"date": "2026-09-15", "close": 116},
+      {"date": "2026-09-18", "close": 125},
+      {"date": "2026-09-19", "close": 132},
+      {"date": "2026-09-22", "close": 119},
+      {"date": "2026-09-29", "close": 124}
+    ],
+    "ORBIT": [
+      {"date": "2026-09-10", "close": 250},
+      {"date": "2026-09-12", "close": 232},
+      {"date": "2026-09-20", "close": 220},
+      {"date": "2026-10-05", "close": 210},
+      {"date": "2026-10-12", "close": 218}
+    ],
+    "PULSE": [
+      {"date": "2026-09-25", "close": 80},
+      {"date": "2026-10-02", "close": 88},
+      {"date": "2026-10-09", "close": 91},
+      {"date": "2026-10-16", "close": 86}
+    ]
+  },
+  "social_mentions": [
+    {"date": "2026-10-01", "symbol": "NOVA", "mentions": 42, "sentiment": 0.58},
+    {"date": "2026-10-02", "symbol": "NOVA", "mentions": 45, "sentiment": 0.61},
+    {"date": "2026-10-03", "symbol": "NOVA", "mentions": 48, "sentiment": 0.60},
+    {"date": "2026-10-04", "symbol": "NOVA", "mentions": 180, "sentiment": 0.84},
+    {"date": "2026-10-05", "symbol": "NOVA", "mentions": 51, "sentiment": 0.62}
+  ],
+  "earnings_transcripts": [
+    {
+      "company": "NOVA",
+      "quarter": "Q2 FY2026",
+      "text": "We are pleased with customer interest. We are still evaluating the timing of several initiatives. We cannot provide a precise launch date at this stage."
+    },
+    {
+      "company": "ORBIT",
+      "quarter": "Q2 FY2026",
+      "text": "Revenue grew during the quarter. Operating costs also increased. We are reviewing the causes and expect to share more detail in a future update."
+    },
+    {
+      "company": "PULSE",
+      "quarter": "Q2 FY2026",
+      "text": "Demand remained steady. Our outlook depends on market conditions. We are not changing our guidance today."
+    },
+    {
+      "company": "ZENITH",
+      "quarter": "Q2 FY2026",
+      "text": "We saw a mixed quarter across regions. Some projects moved more slowly than expected. The team is working through these issues."
+    }
+  ]
+}
