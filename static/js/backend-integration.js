@@ -464,6 +464,12 @@
           localStorage.removeItem(WATCHLIST_KEY);
           notice(document.getElementById("settings-message"), "Watchlist reset to the default demo symbols.", false);
         });
+        const exitLink = document.getElementById("settings-exit");
+        if (exitLink) exitLink.addEventListener("click", () => {
+          localStorage.removeItem("verdict-user-id");
+          localStorage.removeItem("verdict-user-name");
+          localStorage.removeItem("verdict-demo-mode");
+        });
       }
     };
 
