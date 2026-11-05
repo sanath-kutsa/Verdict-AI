@@ -507,6 +507,20 @@ document.addEventListener('DOMContentLoaded', () => {
       tradeForm.addEventListener('submit', handleTradeSubmit);
     }
 
+    const tradeReset = document.getElementById('trade-reset');
+    if (tradeReset) {
+      tradeReset.addEventListener('click', () => {
+        if (tradeSymbol) tradeSymbol.value = 'RELIANCE';
+        if (tradeSide) tradeSide.value = 'buy';
+        if (tradeQty) tradeQty.value = '10';
+        updateOrderValue();
+        if (confirmationBox) {
+          confirmationBox.textContent = 'Order form reset. No transaction was submitted.';
+          confirmationBox.classList.add('visible');
+        }
+      });
+    }
+
     document.querySelectorAll('.range-row .range-btn').forEach((button) => {
       button.addEventListener('click', () => {
         document.querySelectorAll('.range-row .range-btn').forEach((item) => item.classList.remove('active'));
