@@ -386,8 +386,15 @@
       }
       const render = () => {
         let symbols = [];
-        try { symbols = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]"); } catch (_) { symbols = []; }
-        if (!symbols.length) symbols = ["RELIANCE", "TCS", "INFY"];
+        try {
+          const raw = localStorage.getItem(WATCHLIST_KEY);
+          symbols = raw === null ? ["RELIANCE", "TCS", "INFY"] : JSON.parse(raw);
+          if (raw === null) localStorage.setItem(WATCHLIST_KEY, JSON.stringify(symbols));
+        } catch (_) { symbols = ["RELIANCE", "TCS", "INFY"]; }
+        if (!symbols.length) {
+          list.innerHTML = '<li class="watchlist-item">Your watchlist is empty. Add a symbol above.</li>';
+          return;
+        }
         list.innerHTML = symbols.map(symbol => {
           const known = PRICE[symbol];
           return '<li class="watchlist-item"><div><strong>' + esc(symbol) + '</strong><br><small>' +
