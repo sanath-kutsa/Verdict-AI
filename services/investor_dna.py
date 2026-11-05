@@ -65,7 +65,6 @@ def analyse_investor_dna(investor):
                 if lot["quantity"] == 0:
                     open_lots[symbol].popleft()
 
-    reasons = [str(t.get("reason", "")).lower() for t in trades]
     impulsive_terms = ("fear missing out", "fomo", "trending online",
                        "positive online", "social-media spike",
                        "mentions and excitement", "rising quickly",
@@ -126,6 +125,7 @@ def analyse_investor_dna(investor):
 
     result = {
         "investor_name": investor.get("investor_name", "Demo Investor"),
+        "currency": investor.get("currency", "INR"),
         "sample_size": len(trades),
         "buy_count": len(buys),
         "sell_count": len(sells),
