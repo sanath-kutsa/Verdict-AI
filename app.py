@@ -211,9 +211,14 @@ def stress_test():
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
 def regret_replay():
-    payload = request.get_json(silent=True) if request.method == "POST" else request.args
+    payload = (request.get_json(silent=True) if request.method == "POST" else request.args) or {}
     investor = get_investor_payload(payload)
-    return jsonify(replay_sells(investor))
+    return jsonify(replay_sells(
+        investor,
+        trade_type=payload.get("trade_type"),
+        lookback_days=payload.get("lookback_days"),
+        review_note=payload.get("review_note"),
+    ))
 
 
 @app.route("/api/hype-radar", methods=["GET", "POST"])
@@ -249,7 +254,9 @@ def bull_vs_bear():
         if isinstance(payload, dict) and request.method == "POST"
         else request.args.get("symbol", "NOVA")
     )
-    return jsonify(build_bull_bear(investor, symbol))
+    bull_thesis = payload.get("bull_thesis") if isinstance(payload, dict) else None
+    bear_thesis = payload.get("bear_thesis") if isinstance(payload, dict) else None
+    return jsonify(build_bull_bear(investor, symbol, bull_thesis, bear_thesis))
 
 
 @app.route("/api/earnings-language", methods=["GET", "POST"])
