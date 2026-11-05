@@ -32,7 +32,8 @@ Invoke-RestMethod -Uri "$base/api/users/$userId/trades" -Method Post -ContentTyp
 Invoke-RestMethod -Uri "$base/api/users/$userId/trades" -Method Post -ContentType "application/json" -Body $sell | Out-Null
 
 $portfolio = Invoke-RestMethod "$base/api/users/$userId/portfolio"
-$dna = Invoke-RestMethod "$base/api/investor-dna?user_id=$userId"
+$dnaBody = @{ user_id = $userId; risk_style = "Moderate"; bias = "FOMO / momentum chasing"; goal = "Long-term wealth creation"; user_note = "I sometimes buy after a sharp price rise." } | ConvertTo-Json
+$dna = Invoke-RestMethod -Uri "$base/api/investor-dna" -Method Post -ContentType "application/json" -Body $dnaBody
 
 $circuitBody = @{
     user_id = $userId
@@ -46,21 +47,22 @@ $circuitBody = @{
 } | ConvertTo-Json -Depth 6
 $circuit = Invoke-RestMethod -Uri "$base/api/circuit-breaker" -Method Post -ContentType "application/json" -Body $circuitBody
 
-$stressBody = @{ user_id = $userId; scenario_change_pct = -8 } | ConvertTo-Json
+$stressBody = @{ user_id = $userId; symbol = "NOVA"; quantity = 10; current_price = 1000; scenario_change_pct = -20; assumption = "Broad market sell-off" } | ConvertTo-Json
 $stress = Invoke-RestMethod -Uri "$base/api/stress-test" -Method Post -ContentType "application/json" -Body $stressBody
 
-$regret = Invoke-RestMethod "$base/api/regret-replay?user_id=$userId"
+$regretBody = @{ user_id = $userId; trade_type = "All sell decisions"; lookback_days = 365; review_note = "Review the partial exit." } | ConvertTo-Json
+$regret = Invoke-RestMethod -Uri "$base/api/regret-replay" -Method Post -ContentType "application/json" -Body $regretBody
 
-$hypeBody = @{ user_id = $userId; spike_multiplier = 2 } | ConvertTo-Json
+$hypeBody = @{ user_id = $userId; spike_multiplier = 2; theme = "AI infrastructure"; signal_source = "Social media"; narrative = "Everyone is buying because returns are guaranteed, but valuation and competition remain risks." } | ConvertTo-Json
 $hype = Invoke-RestMethod -Uri "$base/api/hype-radar" -Method Post -ContentType "application/json" -Body $hypeBody
 
-$moveBody = @{ user_id = $userId; symbol = "NOVA" } | ConvertTo-Json
+$moveBody = @{ user_id = $userId; symbol = "NOVA"; move_type = "Breakout"; price_change_pct = 5; volume_multiple = 2.1; catalyst = "Quarterly results"; move_context = "Price rose after results on higher-than-average volume." } | ConvertTo-Json
 $move = Invoke-RestMethod -Uri "$base/api/move-autopsy" -Method Post -ContentType "application/json" -Body $moveBody
 
-$bullBearBody = @{ user_id = $userId; symbol = "NOVA" } | ConvertTo-Json
+$bullBearBody = @{ user_id = $userId; symbol = "NOVA"; bull_thesis = "AI demand could expand revenue."; bear_thesis = "Valuation and margin pressure may limit returns." } | ConvertTo-Json
 $bullBear = Invoke-RestMethod -Uri "$base/api/bull-vs-bear" -Method Post -ContentType "application/json" -Body $bullBearBody
 
-$earningsBody = @{ user_id = $userId; company = "NOVA"; quarter = "Q2 FY2026" } | ConvertTo-Json
+$earningsBody = @{ user_id = $userId; company = "NOVA"; quarter = "Q2 FY2026"; transcript_text = "Revenue increased by 25 percent. Net profit increased by 8 percent. Management expects demand to remain strong, but costs could affect margins." } | ConvertTo-Json
 $earnings = Invoke-RestMethod -Uri "$base/api/earnings-language" -Method Post -ContentType "application/json" -Body $earningsBody
 
 Write-Host ""
