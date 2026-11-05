@@ -85,6 +85,15 @@
       const invested = holdings.reduce((sum, item) => sum + Number(item.invested_value || 0), 0);
       const trades = tradeData.trades || [];
       const recent = trades.slice(-5).reverse();
+      const transactionList = document.getElementById("transaction-list");
+      if (transactionList) {
+        transactionList.innerHTML = recent.length ? recent.map(item =>
+          '<li class="transaction-item"><div><strong>' + safe(item.action) + ' ' +
+          safe(item.quantity) + ' ' + safe(item.symbol) + '</strong><br><small>' +
+          safe(item.date || "Demo trade") + '</small></div><strong>' +
+          money(Number(item.quantity) * Number(item.price)) + '</strong></li>'
+        ).join("") : '<li class="transaction-item">No transactions recorded yet.</li>';
+      }
 
       const dashCash = document.getElementById("dash-cash");
       const dashInvested = document.getElementById("dash-invested");
