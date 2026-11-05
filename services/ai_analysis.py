@@ -97,6 +97,8 @@ def generate_feature_analysis(feature, user_inputs, computed_result):
     try:
         text = payload["candidates"][0]["content"]["parts"][0]["text"]
         analysis = json.loads(text)
+        if not isinstance(analysis, dict):
+            raise ValueError("Gemini response must be a JSON object.")
     except (KeyError, IndexError, TypeError, ValueError) as error:
         raise AIAnalysisError("Gemini did not return the expected structured analysis. Please retry.") from error
 
