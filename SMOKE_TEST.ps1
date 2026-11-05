@@ -3,7 +3,11 @@ $base = "http://127.0.0.1:5000"
 
 Write-Host ""
 Write-Host "VERDICT AI API SMOKE TEST" -ForegroundColor Cyan
-Write-Host "Creating an isolated demo account..."
+Write-Host "Checking Gemini configuration..."
+$health = Invoke-RestMethod "$base/api/health"
+if (-not $health.ai_configured) { throw "Gemini is not configured. Copy .env.example to .env, add GEMINI_API_KEY, then restart Flask." }
+Write-Host "Gemini model: $($health.ai_model)"
+Write-Host "Creating an isolated local paper-trading account..."
 
 $guest = Invoke-RestMethod -Uri "$base/api/users/guest" -Method Post -ContentType "application/json" -Body '{"name":"Verdict AI Smoke Test"}'
 $userId = $guest.user.id
@@ -65,6 +69,9 @@ $bullBear = Invoke-RestMethod -Uri "$base/api/bull-vs-bear" -Method Post -Conten
 $earningsBody = @{ user_id = $userId; company = "NOVA"; quarter = "Q2 FY2026"; transcript_text = "Revenue increased by 25 percent. Net profit increased by 8 percent. Management expects demand to remain strong, but costs could affect margins." } | ConvertTo-Json
 $earnings = Invoke-RestMethod -Uri "$base/api/earnings-language" -Method Post -ContentType "application/json" -Body $earningsBody
 
+foreach ($response in @($dna, $circuit, $stress, $regret, $hype, $move, $bullBear, $earnings)) {
+    if ($response.ai_analysis.provider -ne "Google Gemini API") { throw "One or more feature responses did not include Gemini analysis." }
+}
 if ($dna.result.self_assessment.risk_style -ne "Moderate") { throw "Investor DNA did not return the submitted risk style." }
 if ($circuit.result.proposed_trade.emotional_state -ne "Excited") { throw "Circuit Breaker did not return the submitted emotional state." }
 if ($stress.result.positions.Count -ne 1 -or $stress.result.positions[0].symbol -ne "NOVA" -or $stress.result.hypothetical_change_pct -ne -20) { throw "Stress Test did not use the submitted symbol, quantity, price, and shock." }
