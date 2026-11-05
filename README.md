@@ -16,7 +16,7 @@ Verdict AI is an educational decision-analysis MVP. Its eight feature workflows 
    py app.py
    ```
 
-5. Open `http://127.0.0.1:5000`, sign in to the local guest workspace, and run a feature from its own input form.
+3. Open `http://127.0.0.1:5000` and run any feature from its own input form. Guest login is optional for standalone feature analysis; it enables saved paper-trade history.
 
 Each feature page contains its own input form and renders its result in the page after submission. Results are local rule-based calculations, not generative-AI responses.
 
