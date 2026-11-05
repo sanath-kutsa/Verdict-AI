@@ -131,7 +131,7 @@ def analyse_investor_dna(investor, self_assessment=None):
     if assessment.get("user_note"):
         assessment_findings.append("User reflection: " + str(assessment["user_note"])[:500])
     result = {
-        "self_assessment": {key: str(value)[:500] for key, value in assessment.items()},
+        "self_assessment": {key: str(assessment.get(key, ""))[:500] for key in ("risk_style", "bias", "goal", "user_note") if assessment.get(key)},
         "investor_name": investor.get("investor_name", "Demo Investor"),
         "currency": investor.get("currency", "INR"),
         "sample_size": len(trades),
