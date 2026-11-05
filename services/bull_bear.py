@@ -1,7 +1,7 @@
 from services.market_evidence import build_market_evidence
 
 
-def build_bull_bear(investor, symbol="NOVA"):
+def build_bull_bear(investor, symbol="NOVA", bull_thesis=None, bear_thesis=None):
     """Create balanced opposing cases from the exact same evidence snapshot."""
     evidence = build_market_evidence(investor, symbol)
     price = evidence["price_history"]
@@ -64,6 +64,11 @@ def build_bull_bear(investor, symbol="NOVA"):
             pass
         if fundamentals.get("guidance_note"):
             bear_points.append(f"Management context to examine: {fundamentals['guidance_note']}")
+
+    if bull_thesis and str(bull_thesis).strip():
+        bull_points.append("User-supplied bull thesis to examine: " + str(bull_thesis).strip()[:500])
+    if bear_thesis and str(bear_thesis).strip():
+        bear_points.append("User-supplied bear thesis to examine: " + str(bear_thesis).strip()[:500])
 
     if not bull_points:
         bull_points.append("The supplied sample contains too little evidence to form a strong positive case.")
