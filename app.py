@@ -123,7 +123,12 @@ def template_page(page_name):
 
 @app.get("/api/health")
 def health():
-    return jsonify({"status": "ok", "message": "Verdict AI backend is running."})
+    return jsonify({
+        "status": "ok",
+        "message": "Verdict AI backend is running.",
+        "ai_configured": bool(os.environ.get("GEMINI_API_KEY", "").strip()),
+        "ai_model": os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"),
+    })
 
 
 @app.post("/api/users/guest")
