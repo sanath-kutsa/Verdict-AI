@@ -221,7 +221,7 @@ def stress_test():
     else:
         change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
         position = None
-    return jsonify(run_stress_test(investor, change_pct, position))
+    return jsonify(run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None))
 
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
@@ -285,7 +285,7 @@ def bull_vs_bear():
     )
     bull_thesis = payload.get("bull_thesis") if isinstance(payload, dict) else None
     bear_thesis = payload.get("bear_thesis") if isinstance(payload, dict) else None
-    return jsonify(build_bull_bear(investor, symbol, bull_thesis, bear_thesis))
+    return jsonify(build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None))
 
 
 @app.route("/api/earnings-language", methods=["GET", "POST"])
