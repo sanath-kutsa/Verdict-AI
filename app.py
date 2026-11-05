@@ -188,6 +188,16 @@ def circuit_breaker():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     proposed_trade = payload.get("proposed_trade", payload) if isinstance(payload, dict) else None
+    if request.method == "POST":
+        proposed_trade = proposed_trade or {}
+        missing = [key for key in ("symbol", "action", "quantity", "price", "reason") if proposed_trade.get(key) in (None, "")]
+        if missing:
+            raise ValueError("Missing required trade fields: " + ", ".join(missing))
+        try:
+            if float(proposed_trade["quantity"]) <= 0 or float(proposed_trade["price"]) <= 0:
+                raise ValueError
+        except (TypeError, ValueError):
+            raise ValueError("Quantity and planned price must be greater than zero.")
     if request.method == "GET":
         proposed_trade = {
             "symbol": request.args.get("symbol", "NOVA"),
