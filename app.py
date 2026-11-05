@@ -237,7 +237,7 @@ def circuit_breaker():
             "price": request.args.get("price", default=130, type=float),
             "reason": request.args.get("reason", "Bought after a sharp price jump; feared missing out")
         }
-    return jsonify(attach_ai_analysis("circuit_breaker", payload, analyse_circuit_breaker(investor, proposed_trade or {})))
+    return jsonify(attach_local_analysis("circuit_breaker", payload, analyse_circuit_breaker(investor, proposed_trade or {})))
 
 
 @app.route("/api/stress-test", methods=["GET", "POST"])
@@ -252,7 +252,7 @@ def stress_test():
     else:
         change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
         position = None
-    return jsonify(attach_ai_analysis("stress_test", payload, run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None)))
+    return jsonify(attach_local_analysis("stress_test", payload, run_stress_test(investor, change_pct, position, payload.get("assumption") if isinstance(payload, dict) else None)))
 
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
@@ -265,7 +265,7 @@ def regret_replay():
         lookback_days=payload.get("lookback_days"),
         review_note=payload.get("review_note"),
     )
-    return jsonify(attach_ai_analysis("regret_replay", payload, result))
+    return jsonify(attach_local_analysis("regret_replay", payload, result))
 
 
 @app.route("/api/hype-radar", methods=["GET", "POST"])
@@ -284,7 +284,7 @@ def hype_radar():
         signal_source=payload.get("signal_source") if isinstance(payload, dict) else None,
         narrative=payload.get("narrative") if isinstance(payload, dict) else None,
     )
-    return jsonify(attach_ai_analysis("hype_radar", payload, result))
+    return jsonify(attach_local_analysis("hype_radar", payload, result))
 
 
 @app.route("/api/move-autopsy", methods=["GET", "POST"])
@@ -305,7 +305,7 @@ def move_autopsy():
         volume_multiple=payload.get("volume_multiple") if isinstance(payload, dict) else None,
         catalyst=payload.get("catalyst") if isinstance(payload, dict) else None,
     )
-    return jsonify(attach_ai_analysis("move_autopsy", payload, result))
+    return jsonify(attach_local_analysis("move_autopsy", payload, result))
 
 
 @app.route("/api/bull-vs-bear", methods=["GET", "POST"])
@@ -319,7 +319,7 @@ def bull_vs_bear():
     )
     bull_thesis = payload.get("bull_thesis") if isinstance(payload, dict) else None
     bear_thesis = payload.get("bear_thesis") if isinstance(payload, dict) else None
-    return jsonify(attach_ai_analysis("bull_vs_bear", payload, build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None)))
+    return jsonify(attach_local_analysis("bull_vs_bear", payload, build_bull_bear(investor, symbol, bull_thesis, bear_thesis, payload.get("horizon") if isinstance(payload, dict) else None)))
 
 
 @app.route("/api/earnings-language", methods=["GET", "POST"])
@@ -333,7 +333,7 @@ def earnings_language():
         transcript_text=payload.get("transcript_text"),
         quarter=payload.get("quarter"),
     )
-    return jsonify(attach_ai_analysis("earnings_analysis", payload, result))
+    return jsonify(attach_local_analysis("earnings_analysis", payload, result))
 
 
 if __name__ == "__main__":
