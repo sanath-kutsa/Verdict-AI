@@ -1,6 +1,6 @@
 # Verdict AI
 
-Verdict AI is an educational decision-analysis prototype. Its eight feature workflows combine deterministic calculations with Gemini-generated interpretation of information submitted by the user.
+Verdict AI is an educational decision-analysis MVP. Its eight feature workflows use local rule-based analysis and deterministic calculations. No external AI API key or internet connection is required for the feature workflows.
 
 ## Run locally
 
@@ -10,9 +10,7 @@ Verdict AI is an educational decision-analysis prototype. Its eight feature work
    py -m pip install -r requirements.txt
    ```
 
-2. Copy `.env.example` to `.env` in the repository root.
-3. Add your own Gemini API key to `.env` and keep that file private. The default model is `gemini-3.8-flash`; change `GEMINI_MODEL` if needed.
-4. Start Flask:
+2. Start Flask:
 
    ```powershell
    py app.py
@@ -20,7 +18,7 @@ Verdict AI is an educational decision-analysis prototype. Its eight feature work
 
 5. Open `http://127.0.0.1:5000`, sign in to the local guest workspace, and run a feature from its own input form.
 
-The Gemini API key is read only by the Flask backend and is never sent to the browser. Feature endpoints return an error if Gemini is not configured or the provider request fails; they do not silently substitute a canned AI answer.
+Each feature page contains its own input form and renders its result in the page after submission. Results are local rule-based calculations, not generative-AI responses.
 
 ## What the eight features do
 
@@ -37,8 +35,6 @@ The Gemini API key is read only by the Flask backend and is never sent to the br
 
 - Paper trades and the bundled market, social, and company datasets are local simulated data. They are not live exchange feeds.
 - User-entered prices and observations are not independently verified.
-- Gemini interprets the supplied text and computed result; it does not create verified market data, news, or citations.
+- Analysis uses transparent local rules and arithmetic. It does not create verified market data, news, or citations.
 - The app is an educational analysis tool, not financial advice or a trading service.
 - Guest login is a local prototype identity, not production-grade authentication.
-- Gemini requests send the submitted feature inputs and derived analysis to Google's Gemini API. Do not submit private or sensitive information.
-- API availability, quotas, and any charges depend on the Google AI Studio project and its current terms.
