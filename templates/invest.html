@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VERDICT AI | Invest</title>
+    <meta name="description" content="VERDICT AI invest page with simulated market overview, stock detail views, watchlist, portfolio and paper trading." />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/verdict-ai-exact-logo.png" />
+    <script src="https://unpkg.com/lightweight-charts@5.0.5/dist/lightweight-charts.standalone.production.js"></script>
+  </head>
+  <body data-page="invest">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+        <div class="sidebar-header">
+          <div class="brand-block">
+            <img class="brand-logo exact-brand" src="/static/images/verdict-ai-exact-logo.png" alt="VERDICT AI" />
+          </div>
+          <button type="button" class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <div class="nav-group-label">OVERVIEW</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <div class="nav-group-label">INTELLIGENCE</div>
+          <a href="circuit_breaker.html" class="nav-item">Circuit Breaker</a>
+          <a href="move_autopsy.html" class="nav-item">Move Autopsy</a>
+          <a href="stress_test.html" class="nav-item">Stress Test</a>
+          <a href="bull_bear.html" class="nav-item">Bull vs Bear</a>
+          <a href="regret_replay.html" class="nav-item">Regret Replay</a>
+          <a href="hype_radar.html" class="nav-item">Hype Radar</a>
+          <a href="earnings_analysis.html" class="nav-item">Earnings Analysis</a>
+          <a href="investor_dna.html" class="nav-item">Investor DNA</a>
+          <div class="nav-group-label">MARKETS</div>
+          <a href="invest.html" class="nav-item active">Invest</a>
+          <a href="watchlist.html" class="nav-item">Watchlist</a>
+          <a href="portfolio.html" class="nav-item">Portfolio</a>
+          <div class="nav-group-label">ACCOUNT</div>
+          <a href="profile.html" class="nav-item">Profile</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+          <a href="login.html" class="nav-item" data-logout="true">Logout / Exit Demo</a>
+        </nav>
+        <div class="demo-card"><h4>Demo mode</h4><p>All prices, balances and transactions below are fictional demo data.</p></div>
+      </aside>
+
+      <main class="dashboard page-shell">
+        <header class="topbar" aria-label="Invest header">
+          <div class="company-block">
+            <div class="company-avatar">INV</div>
+            <div class="company-text">
+              <h2>Invest</h2>
+              <p>Demo Data workstation</p>
+            </div>
+          </div>
+          <div class="topbar-tools">
+            <div class="theme-toggle-wrap" aria-label="Theme switcher">
+              <span class="theme-mode-label theme-mode-light">LIGHT</span>
+              <button type="button" class="theme-toggle" role="switch" aria-label="Switch to dark mode" aria-checked="false" aria-live="polite" title="Switch to dark mode">
+                <span class="theme-toggle-track" aria-hidden="true">
+                  <span class="theme-toggle-icons">
+                    <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 1.75v2.2M12 20.05v2.2M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M1.75 12h2.2M20.05 12h2.2M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.9A7.8 7.8 0 0 1 9.1 3.8a8.3 8.3 0 1 0 11.1 11.1Z"></path></svg>
+                  </span>
+                  <span class="theme-toggle-thumb"></span>
+                </span>
+              </button>
+              <span class="theme-mode-label theme-mode-dark">DARK</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="invest-layout">
+          <div class="invest-main">
+            <section class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <span class="eyebrow">Market overview</span>
+                  <h2>Demo Data summary</h2>
+                </div>
+                <span class="simulated-pill">Demo Data</span>
+              </div>
+
+              <div class="market-tools">
+                <input id="stock-search" type="search" placeholder="Search by symbol or company name" aria-label="Search stocks" />
+                <button type="button" class="primary-btn" id="search-button">Search</button>
+              </div>
+
+              <div class="stock-grid" id="stock-cards"></div>
+
+              <div class="split-columns">
+                <div class="panel-card" style="padding: 16px;">
+                  <h3>Top gainers</h3>
+                  <ul class="ticker-list" id="gainers-list"></ul>
+                </div>
+                <div class="panel-card" style="padding: 16px;">
+                  <h3>Top losers</h3>
+                  <ul class="ticker-list" id="losers-list"></ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel-card stock-detail-card">
+              <div class="stock-hero">
+                <div>
+                  <span class="eyebrow">Stock details</span>
+                  <h3 id="detail-name">Reliance Industries</h3>
+                </div>
+                <div class="stock-meta">
+                  <span class="badge-up" id="detail-pill">+2.8%</span>
+                  <span class="stock-price" id="detail-price">₹1,487.60</span>
+                </div>
+              </div>
+
+              <div class="range-row" aria-label="Time range selector">
+                <button type="button" class="range-btn active" data-range="1D">1D</button>
+                <button type="button" class="range-btn" data-range="1W">1W</button>
+                <button type="button" class="range-btn" data-range="1M">1M</button>
+                <button type="button" class="range-btn" data-range="3M">3M</button>
+                <button type="button" class="range-btn" data-range="1Y">1Y</button>
+              </div>
+
+              <div class="stock-chart-box chart-candlestick" data-candlestick="RELIANCE" data-range="1M" aria-label="Illustrative candlestick chart for RELIANCE demo data"></div>
+
+              <div class="metric-grid">
+                <div class="metric-box">
+                  <span>Company overview</span>
+                  <strong id="company-overview">Reliance Industries scales across energy, retail and digital services with a strong operating platform.</strong>
+                </div>
+                <div class="metric-box">
+                  <span>Market sentiment</span>
+                  <strong id="market-sentiment">Bullish but measured</strong>
+                </div>
+                <div class="metric-box">
+                  <span>Revenue growth</span>
+                  <strong id="revenue-growth">+18.4% YoY</strong>
+                </div>
+                <div class="metric-box">
+                  <span>Forward P/E</span>
+                  <strong id="forward-pe">25.3x</strong>
+                </div>
+              </div>
+
+              <div class="split-columns">
+                <div>
+                  <h3>Key financial metrics</h3>
+                  <ul class="risk-list">
+                    <li><span>Market cap</span><strong id="market-cap">₹11.8B</strong></li>
+                    <li><span>Gross margin</span><strong id="gross-margin">42.1%</strong></li>
+                    <li><span>Free cash flow</span><strong id="cash-flow">₹1.3B</strong></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3>Risk indicators</h3>
+                  <ul class="risk-list">
+                    <li><span>Beta</span><strong id="beta">1.18</strong></li>
+                    <li><span>Sharpe</span><strong id="sharpe">1.42</strong></li>
+                    <li><span>Volatility</span><strong id="volatility">Moderate</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="invest-side">
+            <section class="panel-card">
+              <div class="panel-head">
+                <h3>Watchlist</h3>
+                <button type="button" class="secondary-btn" id="add-watchlist-btn">Add selected</button>
+              </div>
+              <ul class="watchlist-list" id="watchlist-list"></ul>
+            </section>
+
+            <section class="panel-card">
+              <div class="panel-head">
+                <h3>Portfolio</h3>
+              </div>
+              <div class="portfolio-grid">
+                <div class="value-row"><span>Cash balance</span><strong>₹84,250</strong></div>
+                <div class="value-row"><span>Invested value</span><strong>₹68,400</strong></div>
+                <div class="value-row"><span>Hypothetical gain/loss</span><strong class="positive">+₹6,280</strong></div>
+                <div class="allocation-visual">
+                  <div class="allocation-ring" aria-hidden="true"></div>
+                  <div>
+                    <div class="value-row"><span>Growth</span><strong>48%</strong></div>
+                    <div class="value-row"><span>Quality</span><strong>24%</strong></div>
+                    <div class="value-row"><span>Defensive</span><strong>28%</strong></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel-card">
+              <div class="panel-head">
+                <h3>Paper investing</h3>
+              </div>
+              <form class="trade-form" id="trade-form">
+                <label>
+                  <span class="field-wrap"><span>Stock</span></span>
+                  <select id="trade-symbol" name="tradeSymbol"></select>
+                </label>
+                <div class="form-row">
+                  <label>
+                    <span class="field-wrap"><span>Side</span></span>
+                    <select id="trade-side" name="tradeSide">
+                      <option value="buy">Buy</option>
+                      <option value="sell">Sell</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span class="field-wrap"><span>Quantity</span></span>
+                    <input id="trade-qty" type="number" min="1" value="10" name="quantity" />
+                  </label>
+                </div>
+                <div class="value-row"><span>Estimated order value</span><strong id="est-order-value">₹1,487.60</strong></div>
+                <button type="submit" class="primary-btn">Confirm order</button>
+                <button type="button" class="secondary-btn" id="trade-reset">Reset</button>
+              </form>
+              <div class="confirmation-box" id="trade-confirmation">Demo trade placed: 10 shares of RELIANCE. No funds were moved and no real broker was contacted.</div>
+
+              <div class="panel-head" style="margin-top: 16px;">
+                <h3>Transaction history</h3>
+              </div>
+              <ul class="transaction-list" id="transaction-list"></ul>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

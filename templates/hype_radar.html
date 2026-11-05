@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VERDICT AI | Hype Radar</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/verdict-ai-exact-logo.png" />
+  </head>
+  <body data-page="hype_radar">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+        <div class="sidebar-header">
+          <div class="brand-block">
+            <img class="brand-logo exact-brand" src="/static/images/verdict-ai-exact-logo.png" alt="VERDICT AI" />
+          </div>
+          <button type="button" class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <div class="nav-group-label">OVERVIEW</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <div class="nav-group-label">INTELLIGENCE</div>
+          <a href="circuit_breaker.html" class="nav-item">Circuit Breaker</a>
+          <a href="move_autopsy.html" class="nav-item">Move Autopsy</a>
+          <a href="stress_test.html" class="nav-item">Stress Test</a>
+          <a href="bull_bear.html" class="nav-item">Bull vs Bear</a>
+          <a href="regret_replay.html" class="nav-item">Regret Replay</a>
+          <a href="hype_radar.html" class="nav-item active">Hype Radar</a>
+          <a href="earnings_analysis.html" class="nav-item">Earnings Analysis</a>
+          <a href="investor_dna.html" class="nav-item">Investor DNA</a>
+          <div class="nav-group-label">MARKETS</div>
+          <a href="invest.html" class="nav-item">Invest</a>
+          <a href="watchlist.html" class="nav-item">Watchlist</a>
+          <a href="portfolio.html" class="nav-item">Portfolio</a>
+          <div class="nav-group-label">ACCOUNT</div>
+          <a href="profile.html" class="nav-item">Profile</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+          <a href="login.html" class="nav-item" data-logout="true">Logout / Exit Demo</a>
+        </nav>
+        <div class="demo-card"><h4>Demo mode</h4><p>Fictional analysis for the multi-page platform.</p></div>
+      </aside>
+      <main class="dashboard page-shell">
+        <header class="topbar">
+          <div class="company-block"><div class="company-avatar">HR</div><div class="company-text"><h2>Hype Radar</h2><p>Sentiment monitoring</p></div></div>
+          <div class="topbar-tools"><div class="theme-toggle-wrap"><span class="theme-mode-label theme-mode-light">LIGHT</span><button type="button" class="theme-toggle" role="switch" aria-label="Switch to dark mode" aria-checked="false"><span class="theme-toggle-track"><span class="theme-toggle-icons"><svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 1.75v2.2M12 20.05v2.2M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M1.75 12h2.2M20.05 12h2.2M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg><svg class="moon-icon" viewBox="0 0 24 24"><path d="M20.2 14.9A7.8 7.8 0 0 1 9.1 3.8a8.3 8.3 0 1 0 11.1 11.1Z"></path></svg></span><span class="theme-toggle-thumb"></span></span></button><span class="theme-mode-label theme-mode-dark">DARK</span></div></div>
+        </header>
+        <section class="feature-panel">
+          <div class="feature-summary">
+            <div>
+              <span class="eyebrow">Hype radar</span>
+              <h2>Attention and narrative monitor</h2>
+              <p>Track where investor excitement is running hot and where sentiment is starting to fade.</p>
+            </div>
+            <a href="dashboard.html" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 16px; min-height:44px; border-radius:12px;">Back to dashboard</a>
+          </div>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h3>Sentiment scan</h3>
+              <div class="input-grid">
+                <input type="text" value="AI infrastructure / social / semis" aria-label="Theme" />
+                <select aria-label="Signal source"><option>News sentiment</option><option>Retail chatter</option><option>Analyst mentions</option></select>
+                <textarea aria-label="Narrative">Crowd chatter remains intense, but message quality is dropping as “story” becomes stronger than fundamentals.</textarea>
+              </div>
+              <button type="button" class="primary-btn" style="margin-top:12px;">Scan hype</button>
+            </div>
+
+            <div class="feature-card result-stack">
+              <div class="analysis-state visible" data-panel="demo">
+                <span class="score-pill warning">Hype index 83</span>
+                <div style="margin-top:12px;">
+                  <h3>Attention is accelerating faster than quality signals.</h3>
+                  <p>Social volume remains elevated, but the conversion toward actual buying conviction is slowing.</p>
+                </div>
+                <div class="timeline">
+                  <div class="timeline-row"><strong>Story intensity</strong><div class="meter"><span style="width: 86%"></span></div><span>86%</span></div>
+                  <div class="timeline-row"><strong>Quality of signal</strong><div class="meter"><span style="width: 54%"></span></div><span>54%</span></div>
+                  <div class="timeline-row"><strong>Follow-through</strong><div class="meter"><span style="width: 49%"></span></div><span>49%</span></div>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="loading">
+                <span class="score-pill">Scanning narrative feed</span>
+                <div style="margin-top:12px;">
+                  <h3>Scanning social, press and sentiment data...</h3>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="empty">
+                <span class="score-pill">No themes tracked</span>
+                <div style="margin-top:12px;">
+                  <h3>Add a theme to compare chatter.</h3>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="error">
+                <span class="score-pill warning">Sentiment feed unavailable</span>
+                <div style="margin-top:12px;">
+                  <h3>Hype scanner could not refresh.</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

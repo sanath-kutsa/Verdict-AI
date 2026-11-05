@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VERDICT AI | Earnings Analysis</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/verdict-ai-exact-logo.png" />
+  </head>
+  <body data-page="earnings_analysis">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+        <div class="sidebar-header">
+          <div class="brand-block">
+            <img class="brand-logo exact-brand" src="/static/images/verdict-ai-exact-logo.png" alt="VERDICT AI" />
+          </div>
+          <button type="button" class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <div class="nav-group-label">OVERVIEW</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <div class="nav-group-label">INTELLIGENCE</div>
+          <a href="circuit_breaker.html" class="nav-item">Circuit Breaker</a>
+          <a href="move_autopsy.html" class="nav-item">Move Autopsy</a>
+          <a href="stress_test.html" class="nav-item">Stress Test</a>
+          <a href="bull_bear.html" class="nav-item">Bull vs Bear</a>
+          <a href="regret_replay.html" class="nav-item">Regret Replay</a>
+          <a href="hype_radar.html" class="nav-item">Hype Radar</a>
+          <a href="earnings_analysis.html" class="nav-item active">Earnings Analysis</a>
+          <a href="investor_dna.html" class="nav-item">Investor DNA</a>
+          <div class="nav-group-label">MARKETS</div>
+          <a href="invest.html" class="nav-item">Invest</a>
+          <a href="watchlist.html" class="nav-item">Watchlist</a>
+          <a href="portfolio.html" class="nav-item">Portfolio</a>
+          <div class="nav-group-label">ACCOUNT</div>
+          <a href="profile.html" class="nav-item">Profile</a>
+          <a href="settings.html" class="nav-item">Settings</a>
+          <a href="login.html" class="nav-item" data-logout="true">Logout / Exit Demo</a>
+        </nav>
+        <div class="demo-card"><h4>Demo mode</h4><p>Fictional analysis for the multi-page platform.</p></div>
+      </aside>
+      <main class="dashboard page-shell">
+        <header class="topbar">
+          <div class="company-block"><div class="company-avatar">EA</div><div class="company-text"><h2>Earnings Analysis</h2><p>Quarter review</p></div></div>
+          <div class="topbar-tools"><div class="theme-toggle-wrap"><span class="theme-mode-label theme-mode-light">LIGHT</span><button type="button" class="theme-toggle" role="switch" aria-label="Switch to dark mode" aria-checked="false"><span class="theme-toggle-track"><span class="theme-toggle-icons"><svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 1.75v2.2M12 20.05v2.2M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M1.75 12h2.2M20.05 12h2.2M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg><svg class="moon-icon" viewBox="0 0 24 24"><path d="M20.2 14.9A7.8 7.8 0 0 1 9.1 3.8a8.3 8.3 0 1 0 11.1 11.1Z"></path></svg></span><span class="theme-toggle-thumb"></span></span></button><span class="theme-mode-label theme-mode-dark">DARK</span></div></div>
+        </header>
+        <section class="feature-panel">
+          <div class="feature-summary">
+            <div>
+              <span class="eyebrow">Earnings analysis</span>
+              <h2>Quarter signal review</h2>
+              <p>Inspect whether quarterly results truly beat expectations or only look better on a low bar.</p>
+            </div>
+            <a href="dashboard.html" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 16px; min-height:44px; border-radius:12px;">Back to dashboard</a>
+          </div>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h3>Earnings inputs</h3>
+              <div class="input-grid">
+                <input type="text" value="HL · Q2 FY25" aria-label="Quarter" />
+                <input type="text" value="Revenue ₹1.42B" aria-label="Revenue" />
+                <textarea aria-label="Guidance">Guidance is improving, but comments suggest slower demand in the second half of the year.</textarea>
+              </div>
+              <button type="button" class="primary-btn" style="margin-top:12px;">Run earnings review</button>
+            </div>
+
+            <div class="feature-card result-stack">
+              <div class="analysis-state visible" data-panel="demo">
+                <span class="score-pill success">Beat quality: fair</span>
+                <div style="margin-top:12px;">
+                  <h3>Headline beat is positive, but guidance is gradually losing its edge.</h3>
+                  <p>Revenue was above expectations, yet margin expansion was driven mostly by cost cuts rather than true operating leverage.</p>
+                </div>
+                <div class="timeline">
+                  <div class="timeline-row"><strong>Revenue beat</strong><div class="meter"><span style="width: 74%"></span></div><span>74%</span></div>
+                  <div class="timeline-row"><strong>Margin quality</strong><div class="meter"><span style="width: 51%"></span></div><span>51%</span></div>
+                  <div class="timeline-row"><strong>Guidance risk</strong><div class="meter"><span style="width: 62%"></span></div><span>62%</span></div>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="loading">
+                <span class="score-pill">Reviewing earnings transcript</span>
+                <div style="margin-top:12px;">
+                  <h3>Parsing the call and comparing to consensus...</h3>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="empty">
+                <span class="score-pill">No earnings loaded</span>
+                <div style="margin-top:12px;">
+                  <h3>Choose a quarter to evaluate.</h3>
+                </div>
+              </div>
+              <div class="analysis-state" data-panel="error">
+                <span class="score-pill warning">Earnings feed failed</span>
+                <div style="margin-top:12px;">
+                  <h3>The transcript lookup could not complete.</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>

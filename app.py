@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from services.demo_data import load_investor_data
 from services.investor_dna import analyse_investor_dna
 from services.circuit_breaker import analyse_circuit_breaker
@@ -38,6 +38,51 @@ def home():
             "hype_radar"
         ]
     })
+
+
+@app.route("/login")
+@app.route("/login.html")
+def login_page():
+    return render_template("login.html")
+
+
+@app.route("/signup")
+@app.route("/signup.html")
+def signup_page():
+    return render_template("signup.html")
+
+
+@app.route("/dashboard")
+@app.route("/dashboard.html")
+def dashboard_page():
+    return render_template("dashboard.html")
+
+
+@app.route("/about")
+@app.route("/about.html")
+def about_page():
+    return render_template("about.html")
+
+
+@app.route("/terms")
+@app.route("/terms.html")
+def terms_page():
+    return render_template("terms.html")
+
+
+@app.route("/disclaimer")
+@app.route("/disclaimer.html")
+def disclaimer_page():
+    return render_template("disclaimer.html")
+
+
+@app.route("/<path:page_name>")
+def template_page(page_name):
+    template_file = page_name if page_name.endswith(".html") else f"{page_name}.html"
+    import os
+    if not os.path.exists(os.path.join("templates", template_file)):
+        return "Page not found", 404
+    return render_template(template_file)
 
 
 @app.get("/api/health")

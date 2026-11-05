@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VERDICT AI | Redirecting</title>
+    <meta
+      name="description"
+      content="VERDICT AI — redirecting to sign in."
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="icon" type="image/png" href="/static/images/verdict-ai-exact-logo.png" />
+    <style>
+      body {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(180deg, #edf3f0, #e6f0ef);
+        color: #1d302f;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      .redirect-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255,255,255,0.8);
+        border: 1px solid #dfe9e5;
+        border-radius: 20px;
+        padding: 28px 32px;
+        box-shadow: 0 18px 42px rgba(20, 31, 30, 0.06);
+      }
+      .brand-lockup {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: nowrap;
+      }
+      .redirect-logo {
+        width: 42px;
+        height: auto;
+        display: block;
+        object-fit: contain;
+      }
+      .brand-wordmark-lockup {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0;
+        font-weight: 800;
+        letter-spacing: -0.08em;
+        line-height: 1;
+        white-space: nowrap;
+        font-size: clamp(1.1rem, 2.5vw, 2rem);
+      }
+      .brand-wordmark-lockup .brand-word { color: #1d302f; }
+      .brand-wordmark-lockup .brand-accent { color: #197a75; }
+      .redirect-card h1 { margin: 0; font-size: 1.2rem; letter-spacing: -0.04em; }
+      .redirect-card p { margin: 0; color: #5d716f; }
+    </style>
+  </head>
+  <body>
+    <div class="redirect-card" aria-live="polite">
+      <div class="brand-lockup" aria-label="VERDICT AI">
+        <img class="redirect-logo" src="/static/images/verdict-ai-exact-logo.png" alt="VERDICT AI" />
+        <div class="brand-wordmark-lockup" aria-label="VERDICT AI">
+          <span class="brand-word">VERDICT</span>
+          <span class="brand-accent">AI</span>
+        </div>
+      </div>
+      <p>Redirecting to the login screen...</p>
+    </div>
+    <script>
+      window.location.replace("login.html");
+    </script>
+  </body>
+</html>
