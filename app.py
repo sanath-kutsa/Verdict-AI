@@ -1,6 +1,10 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from services.demo_data import load_investor_data
 from services.investor_dna import analyse_investor_dna
+from services.circuit_breaker import analyse_circuit_breaker
+from services.stress_test import run_stress_test
+from services.regret_replay import replay_sells
+from services.hype_radar import analyse_hype
 
 app = Flask(__name__)
 
@@ -26,6 +30,13 @@ def home():
         "tagline": "Decide before you trade.",
         "status": "Backend is running",
         "data_mode": "simulated",
+        "available_features": [
+            "investor_dna",
+            "circuit_breaker",
+            "stress_test",
+            "regret_replay",
+            "hype_radar"
+        ]
     })
 
 
@@ -58,6 +69,45 @@ def dashboard():
 def investor_dna():
     investor = load_investor_data()
     return jsonify(analyse_investor_dna(investor))
+
+
+@app.route("/api/circuit-breaker", methods=["GET", "POST"])
+def circuit_breaker():
+    investor = load_investor_data()
+    proposed_trade = request.get_json(silent=True) if request.method == "POST" else None
+    if request.method == "GET":
+        proposed_trade = {
+            "symbol": request.args.get("symbol", "NOVA"),
+            "action": request.args.get("action", "BUY"),
+            "quantity": request.args.get("quantity", default=5, type=float),
+            "price": request.args.get("price", default=130, type=float),
+            "reason": request.args.get("reason", "Bought after a sharp price jump; feared missing out")
+        }
+    return jsonify(analyse_circuit_breaker(investor, proposed_trade or {}))
+
+
+@app.route("/api/stress-test", methods=["GET", "POST"])
+def stress_test():
+    investor = load_investor_data()
+    if request.method == "POST":
+        payload = request.get_json(silent=True) or {}
+        change_pct = payload.get("scenario_change_pct", -10)
+    else:
+        change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
+    return jsonify(run_stress_test(investor, change_pct))
+
+
+@app.get("/api/regret-replay")
+def regret_replay():
+    investor = load_investor_data()
+    return jsonify(replay_sells(investor))
+
+
+@app.get("/api/hype-radar")
+def hype_radar():
+    investor = load_investor_data()
+    multiplier = request.args.get("spike_multiplier", default=2.0, type=float)
+    return jsonify(analyse_hype(investor, multiplier))
 
 
 if __name__ == "__main__":
