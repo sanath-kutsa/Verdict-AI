@@ -237,7 +237,7 @@
           });
           const result = data.result || {};
           if (summary) summary.textContent = data.explanation?.summary || "Behavioural comparison completed.";
-          if (history) history.textContent = (result.flags || []).map(flag => flag.message).join(" ") || "No matching historical pattern was found.";
+          if (history) history.textContent = "Exchange: " + String(values.get("exchange") || "NSE") + ". " + ((result.flags || []).map(flag => flag.message).join(" ") || "No matching historical pattern was found.");
           if (cooling) cooling.textContent = result.risk_level === "review"
             ? "Review flag detected. Pause and independently reassess your assumptions before deciding."
             : result.risk_level === "notice"
@@ -261,6 +261,12 @@
         try {
           const data = await api("/api/investor-dna?user_id=" + userId);
           const r = data.result || {};
+          const controls = getFeatureControls();
+          const selfDescription = [
+            "Self-described risk style: " + (controls.byLabel("Risk style")?.value || "Not supplied"),
+            "Self-described bias: " + (controls.byLabel("Bias")?.value || "Not supplied"),
+            "User note: " + (controls.byLabel("Summary")?.value || "Not supplied")
+          ];
           const html =
             '<div class="list-stack">' +
             '<div class="list-item"><span>Recorded trades</span><strong>' + esc(r.sample_size || 0) + '</strong></div>' +
@@ -269,7 +275,8 @@
             '<div class="list-item"><span>Average holding period</span><strong>' + (r.average_holding_days == null ? "Not enough data" : esc(r.average_holding_days + " days")) + '</strong></div>' +
             '<div class="list-item"><span>Realised P&amp;L</span><strong>' + money(r.realised_pnl) + '</strong></div>' +
             '<div class="list-item"><span>Most traded symbol</span><strong>' + esc(r.most_traded_symbol || "Not enough data") + '</strong></div>' +
-            '<div class="list-item"><span>Momentum-language buys</span><strong>' + esc(r.impulse_buy_count || 0) + '</strong></div></div>';
+            '<div class="list-item"><span>Momentum-language buys</span><strong>' + esc(r.impulse_buy_count || 0) + '</strong></div></div>' +
+            '<h4 style="margin-top:16px">Your self-description</h4><ul class="risk-list">' + findingsHtml(selfDescription) + '</ul>';
           renderGeneric(data, html, "Based on " + (r.sample_size || 0) + " saved trades");
         } catch (error) { renderPanel(resultHeading("Analysis unavailable", error.message)); }
         finally { setBusy(controls.button, false); }
@@ -298,21 +305,34 @@
           const raw = value("Shock");
           const match = raw.match(/-?\d+(?:\.\d+)?/);
           payload.scenario_change_pct = match ? Number(match[0]) : -8;
+          payload.scenario_label = value("Scenario selection");
+          payload.assumption = value("Assumption");
           pill = "Hypothetical " + payload.scenario_change_pct + "% scenario";
         } else if (page === "regret_replay") {
           endpoint = "/api/regret-replay";
-          pill = "Saved sell decisions";
+          payload.trade_type = value("Trade type") || "All sell decisions";
+          const lookbackMatch = value("Lookback").match(/\d+/);
+          payload.lookback_days = lookbackMatch ? Number(lookbackMatch[0]) : 90;
+          payload.review_note = value("Review note");
+          pill = payload.trade_type + " · " + payload.lookback_days + " day lookback";
         } else if (page === "hype_radar") {
           endpoint = "/api/hype-radar";
           payload.spike_multiplier = 2;
+          payload.theme = value("Theme");
+          payload.signal_source = value("Signal source");
+          payload.narrative = value("Narrative");
           pill = "Attention spike scan";
         } else if (page === "move_autopsy") {
           endpoint = "/api/move-autopsy";
           payload.symbol = symbolFrom(value("Stock"), "NOVA");
+          payload.move_type = value("Move type");
+          payload.move_context = value("What happened");
           pill = payload.symbol + " evidence review";
         } else if (page === "bull_bear") {
           endpoint = "/api/bull-vs-bear";
           payload.symbol = symbolFrom(value("Ticker"), "NOVA");
+          payload.bull_thesis = value("Bull thesis");
+          payload.bear_thesis = value("Bear thesis");
           pill = payload.symbol + " balanced debate";
         } else if (page === "earnings_analysis") {
           endpoint = "/api/earnings-language";
@@ -330,7 +350,7 @@
           const data = await api(endpoint, payload);
           const r = data.result || {};
           if (page === "stress_test") {
-            detail = '<div class="list-stack">' +
+            detail = '<p><strong>Scenario:</strong> ' + esc(payload.scenario_label || "Custom shock") + '<br><strong>Assumption:</strong> ' + esc(payload.assumption || "None supplied") + '</p><div class="list-stack">' +
               '<div class="list-item"><span>Current simulated value</span><strong>' + money(r.current_simulated_portfolio_value) + '</strong></div>' +
               '<div class="list-item"><span>Hypothetical value</span><strong>' + money(r.hypothetical_portfolio_value) + '</strong></div>' +
               '<div class="list-item"><span>Hypothetical change</span><strong>' + money(r.hypothetical_change_value) + '</strong></div>' +
@@ -340,16 +360,19 @@
           } else if (page === "regret_replay") {
             detail = '<div class="list-stack"><div class="list-item"><span>Eligible sell decisions</span><strong>' + esc(r.replayed_sell_count || 0) + '</strong></div>' +
               '<div class="list-item"><span>Next-observation difference</span><strong>' + money(r.hypothetical_difference_total) + '</strong></div></div>' +
+              '<p><strong>Review note:</strong> ' + esc(payload.review_note || "No note supplied") + '</p>' +
               ((r.replays || []).length ? '<ul class="risk-list">' + findingsHtml(r.replays.map(item => item.symbol + ": sold at " + money(item.sell_price) + "; next sample " + money(item.next_observation_price) + " on " + item.next_observation_date)) + '</ul>' :
               '<p>No saved sell has a later observation in the sample dataset yet. This is expected for recent trades; the tool will not invent hindsight prices.</p>');
           } else if (page === "hype_radar") {
             const symbols = r.symbols || [];
             const spikes = symbols.flatMap(item => (item.spikes || []).map(spike => item.symbol + ": " + spike.spike_multiple + "x mention baseline on " + spike.date));
-            detail = '<div class="list-stack"><div class="list-item"><span>Symbols analysed</span><strong>' + esc(r.symbols_analysed || 0) + '</strong></div>' +
+            detail = '<p><strong>Theme:</strong> ' + esc(payload.theme || "All sample mentions") + ' · <strong>Source:</strong> ' + esc(payload.signal_source || "All") + '</p>' +
+              '<div class="list-stack"><div class="list-item"><span>Symbols analysed</span><strong>' + esc(r.symbols_analysed || 0) + '</strong></div>' +
               '<div class="list-item"><span>Attention spikes</span><strong>' + esc(r.spike_count || 0) + '</strong></div></div>' +
               '<ul class="risk-list">' + findingsHtml(spikes.length ? spikes : ["No sample mention spikes crossed the configured threshold."]) + '</ul>';
           } else if (page === "move_autopsy") {
-            detail = '<div class="list-stack"><div class="list-item"><span>Evidence signals</span><strong>' + esc(r.evidence_count || 0) + '</strong></div>' +
+            detail = '<p><strong>Move type:</strong> ' + esc(payload.move_type || "Not specified") + '<br><strong>Context:</strong> ' + esc(payload.move_context || "None supplied") + '</p>' +
+              '<div class="list-stack"><div class="list-item"><span>Evidence signals</span><strong>' + esc(r.evidence_count || 0) + '</strong></div>' +
               '<div class="list-item"><span>Symbol</span><strong>' + esc(r.symbol || payload.symbol) + '</strong></div></div>' +
               '<ul class="risk-list">' + findingsHtml((r.drivers || []).map(item => item.finding)) + '</ul>';
           } else if (page === "bull_bear") {
