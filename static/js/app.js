@@ -39,9 +39,29 @@ document.addEventListener('DOMContentLoaded', () => {
     notice.dataset.tone = tone;
   };
 
-  const goToDashboard = () => {
-    localStorage.setItem(DEMO_MODE_KEY, 'true');
-    window.location.href = 'dashboard.html';
+  const goToDashboard = async (name) => {
+    const cleanName = String(name || '').trim();
+    if (!cleanName) {
+      setAuthMessage('Please enter your name to continue.', 'warning');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/users/guest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: cleanName })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not create your demo profile.');
+
+      localStorage.setItem(DEMO_MODE_KEY, 'true');
+      localStorage.setItem('verdict-user-id', String(data.user.id));
+      localStorage.setItem('verdict-user-name', data.user.name);
+      window.location.href = '/dashboard';
+    } catch (error) {
+      setAuthMessage(error.message || 'Unable to connect to Verdict AI. Please try again.', 'warning');
+    }
   };
 
   const initLoginPage = () => {
@@ -66,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signInForm && emailButton) {
       signInForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        setAuthMessage('Email sign-in is not active in this demo. Real authentication requires backend integration before login is enabled.', 'warning');
+        const nameInput = signInForm.querySelector('input[name="name"]');
+        goToDashboard(nameInput ? nameInput.value : '');
       });
     }
 
@@ -83,7 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (demoButton) {
-      demoButton.addEventListener('click', goToDashboard);
+      demoButton.addEventListener('click', () => {
+        const nameInput = document.querySelector('.auth-form input[name="name"]');
+        goToDashboard(nameInput ? nameInput.value : '');
+      });
     }
 
     authLinks.forEach((link) => {
@@ -196,6 +220,20 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const formatMoney = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(value);
+
+  const initUserBadge = () => {
+    const name = localStorage.getItem('verdict-user-name');
+    const userId = localStorage.getItem('verdict-user-id');
+    const tools = document.querySelector('.topbar-tools');
+    if (!name || !userId || !tools || tools.querySelector('.user-greeting')) return;
+
+    const badge = document.createElement('div');
+    badge.className = 'user-greeting';
+    badge.textContent = name;
+    badge.setAttribute('title', 'Signed in demo user');
+    badge.style.cssText = 'padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--text);font-weight:600;font-size:.85rem;white-space:nowrap;';
+    tools.prepend(badge);
+  };
 
   const initCollectionPage = () => {
     const collectionList = document.getElementById('demo-collection-list');
@@ -850,6 +888,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   initLoginPage();
+  initUserBadge();
   initCandlestickCharts();
   initDashboardMarketOverview();
   initInvestPage();
