@@ -3,10 +3,10 @@ $base = "http://127.0.0.1:5000"
 
 Write-Host ""
 Write-Host "VERDICT AI API SMOKE TEST" -ForegroundColor Cyan
-Write-Host "Checking Gemini configuration..."
+Write-Host "Checking local backend..."
 $health = Invoke-RestMethod "$base/api/health"
-if (-not $health.ai_configured) { throw "Gemini is not configured. Copy .env.example to .env, add GEMINI_API_KEY, then restart Flask." }
-Write-Host "Gemini model: $($health.ai_model)"
+if ($health.status -ne "ok") { throw "Verdict AI backend is not ready." }
+Write-Host "Analysis mode: $($health.analysis_mode)"
 Write-Host "Creating an isolated local paper-trading account..."
 
 $guest = Invoke-RestMethod -Uri "$base/api/users/guest" -Method Post -ContentType "application/json" -Body '{"name":"Verdict AI Smoke Test"}'
@@ -72,7 +72,7 @@ $earningsBody = @{ user_id = $userId; company = "NOVA"; quarter = "Q2 FY2026"; t
 $earnings = Invoke-RestMethod -Uri "$base/api/earnings-language" -Method Post -ContentType "application/json" -Body $earningsBody
 
 foreach ($response in @($dna, $circuit, $stress, $regret, $hype, $move, $bullBear, $earnings)) {
-    if ($response.ai_analysis.provider -ne "Google Gemini API") { throw "One or more feature responses did not include Gemini analysis." }
+    if ($response.analysis_mode -ne "local_rule_based_and_deterministic") { throw "A feature did not return local analysis mode." }
 }
 if ($dna.result.self_assessment.risk_style -ne "Moderate") { throw "Investor DNA did not return the submitted risk style." }
 if ($circuit.result.proposed_trade.emotional_state -ne "Excited") { throw "Circuit Breaker did not return the submitted emotional state." }
@@ -95,5 +95,5 @@ Write-Host "[PASS] 6. Move Autopsy: $($move.result.symbol), $($move.result.evide
 Write-Host "[PASS] 7. Bull vs Bear: $($bullBear.result.bull_case.Count) bull point(s), $($bullBear.result.bear_case.Count) bear point(s)"
 Write-Host "[PASS] 8. Earnings Language: $($earnings.result.flag_count) wording flag(s)"
 Write-Host ""
-Write-Host "Smoke test completed. Gemini analysed submitted inputs; bundled market history remains illustrative sample data." -ForegroundColor Green
+Write-Host "Smoke test completed. All eight workflows returned local analysis; bundled market history remains illustrative sample data." -ForegroundColor Green
 Write-Host "Test account ID: $userId (safe to leave in the local demo database)."
