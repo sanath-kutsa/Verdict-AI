@@ -275,19 +275,34 @@
           const data = await api(spec.endpoint,payload);
           const r = data.result || {};
           const findings = (data.explanation?.key_findings || []).map(x=>'<li>'+esc(x)+'</li>').join("");
-          const metrics = Object.entries(r).filter(([k,v])=>!["evidence","shared_evidence","symbols","replays","positions","flags","drivers","bull_case","bear_case","closed_trade_sample","open_positions"].includes(k) && (typeof v!=="object" || v===null)).map(([k,v])=>'<div class="list-item"><span>'+esc(k.replaceAll("_"," "))+'</span><strong>'+esc(renderValue(v))+'</strong></div>').join("");
-          const lists = [];
-          for (const key of ["flags","drivers","positions","replays","bull_case","bear_case","symbols"]) {
-            const value = r[key];
-            if (Array.isArray(value) && value.length) lists.push('<h4>'+esc(key.replaceAll("_"," "))+'</h4><ul class="risk-list">'+value.map(item=>'<li>'+esc(renderValue(item))+'</li>').join("")+'</ul>');
+          const metric = (label,value) => '<div class="list-item"><span>'+esc(label)+'</span><strong>'+esc(value == null ? "Not available" : value)+'</strong></div>';
+          const list = (title,items) => '<h4>'+esc(title)+'</h4><ul class="risk-list">'+(items||[]).map(x=>'<li>'+esc(typeof x==="string"?x:(x.finding||x.message||x.note||JSON.stringify(x)))+'</li>').join("")+'</ul>';
+          let featureOutput = "";
+          if (page === "stress_test") {
+            featureOutput = '<div class="list-stack">'+metric("Stock", (r.positions||[]).map(x=>x.symbol).join(", "))+
+              metric("Reference value", "₹"+Number(r.current_simulated_portfolio_value||0).toLocaleString("en-IN"))+
+              metric("Stressed value", "₹"+Number(r.hypothetical_portfolio_value||0).toLocaleString("en-IN"))+
+              metric("Estimated change", "₹"+Number(r.hypothetical_change_value||0).toLocaleString("en-IN"))+'</div>'+
+              list("Position breakdown",r.positions||[])+'<p>Scenario: '+esc(r.scenario_change_pct)+'% · '+esc(r.assumption||"No extra assumption supplied.")+'</p>';
+          } else if (page === "investor_dna") {
+            featureOutput = '<div class="list-stack">'+metric("Recorded trades",r.sample_size)+metric("Buy / sell",String(r.buy_count)+" / "+String(r.sell_count))+metric("Impulse-buy rate",String(r.impulse_buy_rate)+"%")+metric("Fear-based sell rate",String(r.fear_based_sell_rate)+"%")+'</div>'+list("Self-assessment",Object.entries(r.self_assessment||{}).map(([k,v])=>k+": "+v));
+          } else if (page === "circuit_breaker") {
+            featureOutput = '<div class="list-stack">'+metric("Review status",r.risk_level)+metric("Trade",((r.proposed_trade||{}).action||"")+" "+((r.proposed_trade||{}).quantity||"")+" "+((r.proposed_trade||{}).symbol||""))+'</div>'+list("Behavioural flags",r.flags||[]);
+          } else if (page === "regret_replay") {
+            featureOutput = '<div class="list-stack">'+metric("Replayed sells",r.replayed_sell_count)+metric("Hypothetical difference","₹"+Number(r.hypothetical_difference_total||0).toLocaleString("en-IN"))+'</div>'+list("Replay observations",r.replays||[])+ '<p>Your reflection: '+esc((r.filters||{}).review_note||"Not supplied")+'</p>';
+          } else if (page === "hype_radar") {
+            featureOutput = '<div class="list-stack">'+metric("Narrative score",r.narrative_analysis?.score == null ? "Not scored" : r.narrative_analysis.score+"/100")+metric("Mention spikes",r.spike_count)+metric("Sample symbols",r.symbols_analysed)+'</div>'+list("Promotional wording",r.narrative_analysis?.promotional_terms||[])+list("Risk wording",r.narrative_analysis?.risk_terms||[])+list("Sample spikes",r.symbols||[]);
+          } else if (page === "move_autopsy") {
+            featureOutput = '<div class="list-stack">'+metric("Stock",r.symbol)+metric("Evidence signals",r.evidence_count)+'</div>'+list("Evidence and possible drivers",r.drivers||[]);
+          } else if (page === "bull_bear") {
+            featureOutput = '<div class="list-stack">'+metric("Stock",r.symbol)+metric("Horizon",r.investment_horizon)+'</div>'+list("Bull case",r.bull_case||[])+list("Bear case",r.bear_case||[]);
+          } else if (page === "earnings_analysis") {
+            featureOutput = '<div class="list-stack">'+metric("Company",r.company)+metric("Quarter",r.quarter)+metric("Words reviewed",r.transcript_word_count)+metric("Flags",r.flag_count)+'</div>'+list("Language flags",r.flags||[]);
           }
-          const ai = data.ai_analysis || {};
-          const aiHtml = '<section class="ai-analysis-block"><span class="score-pill success">Gemini AI analysis · '+esc(ai.model || "configured model")+'</span><h3>'+esc(ai.summary || "AI interpretation completed.")+'</h3>' +
-            '<h4>What the analysis found</h4><ul class="risk-list">'+(ai.key_findings||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>' +
-            '<h4>Risks and caveats</h4><ul class="risk-list">'+(ai.risks||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>' +
-            '<h4>Suggested review steps</h4><ul class="risk-list">'+(ai.next_steps||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>' +
-            ((ai.data_gaps||[]).length?'<h4>Missing information</h4><ul class="risk-list">'+ai.data_gaps.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>':'')+'</section>';
-          output.innerHTML = '<span class="score-pill success">Analysis complete</span>'+aiHtml+'<h4>Deterministic backend calculations</h4><h3>'+esc(data.explanation?.summary || "Backend calculations completed.")+'</h3><div class="list-stack">'+metrics+'</div>'+lists.join("")+'<h4>Calculation findings</h4><ul class="risk-list">'+findings+'</ul><p class="demo-data-label">'+esc(data.analysis_mode || "Backend analysis")+' · '+esc(data.data_mode || "User-supplied input")+'</p><details><summary>Methodology and limitations</summary><ul class="risk-list">'+(data.explanation?.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+(ai.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></details><details><summary>Raw backend result</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(JSON.stringify(r,null,2))+'</pre></details>';
+          output.innerHTML = '<span class="score-pill success">Local analysis complete</span><h3>'+esc(data.explanation?.summary||"Analysis completed.")+'</h3>'+featureOutput+
+            list("Key findings",data.explanation?.key_findings||[])+'<p class="demo-data-label">LOCAL RULE-BASED ANALYSIS · '+esc(data.explanation?.confidence||"Illustrative analysis")+'</p>'+
+            '<details><summary>Methodology and limitations</summary>'+list("Limitations",data.explanation?.limitations||[])+'</details>'+
+            '<details><summary>Raw result data</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(JSON.stringify(r,null,2))+'</pre></details>';
           notice(message,"Analysis completed. Results below are from the backend response.",false);
         } catch(error) {
           output.innerHTML = '<span class="score-pill warning">Analysis failed</span><h3>'+esc(error.message)+'</h3><p>Check the input and Flask server, then try again.</p>';
