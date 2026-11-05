@@ -55,56 +55,7 @@
             <a href="dashboard.html" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 16px; min-height:44px; border-radius:12px;">Back to Dashboard</a>
           </div>
 
-          <div class="feature-grid">
-            <div class="feature-card">
-              <h3>Trade context</h3>
-              <form class="feature-form circuit-form">
-                <label>
-                  <span>Stock symbol or company name</span>
-                  <input type="text" name="stock" value="RELIANCE" aria-label="Stock symbol or company name" />
-                </label>
-                <div class="form-row">
-                  <label>
-                    <span>Exchange</span>
-                    <select name="exchange" aria-label="Exchange">
-                      <option value="NSE" selected>NSE</option>
-                      <option value="BSE">BSE</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>Intended action</span>
-                    <select name="action" aria-label="Intended action">
-                      <option value="Buy" selected>Buy</option>
-                      <option value="Sell">Sell</option>
-                    </select>
-                  </label>
-                </div>
-                <div class="form-row">
-                  <label>
-                    <span>Quantity</span>
-                    <input type="number" name="quantity" value="50" min="1" aria-label="Quantity" />
-                  </label>
-                  <label>
-                    <span>Reason for the trade</span>
-                    <input type="text" name="reason" value="Breakout follow-through" aria-label="Reason for the trade" />
-                  </label>
-                </div>
-                <button type="submit" class="primary-btn">Analyze Decision</button>
-              </form>
-            </div>
-
-            <div class="feature-card result-stack">
-              <div class="analysis-result">
-                <span class="score-pill warning">Behavioural pattern detected</span>
-                <h3>Pattern match: your intent resembles prior impulse entries.</h3>
-                <p id="circuit-summary">This trade is moving fast after a sharp move. In similar decisions, a short cooling-off period helped reduce regret and improve later execution quality.</p>
-                <ul class="risk-list">
-                  <li><span>Relevant historical decisions</span><strong id="circuit-history">3 of 5 recent buy entries were made within 30 minutes of a breakout spike.</strong></li>
-                  <li><span>Cooling-off suggestion</span><strong id="circuit-cooling">Wait 24 hours and recheck the trade setup before placing the order.</strong></li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <div class="feature-grid"><div class="feature-card"><p>Loading the interactive feature workspace…</p></div></div>
         </section>
       </main>
     </div>
