@@ -100,7 +100,7 @@ def analyse_move(investor, symbol="NOVA", move_type=None, move_context=None, pri
             "currency": evidence["currency"],
             "drivers": drivers,
             "evidence": evidence,
-            "evidence_count": len(evidence["evidence_items"]),
+            "evidence_count": len(drivers),
         },
         "explanation": {
             "summary": summary,
