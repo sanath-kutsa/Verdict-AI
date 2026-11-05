@@ -237,10 +237,10 @@
       const fieldHtml = spec.fields.map(([name,label,type,options]) => {
         const isTextArea = type === "textarea";
         const control = isTextArea
-          ? '<textarea name="'+name+'" required rows="4" placeholder="'+(typeof options==="string"?esc(options):"")+'"></textarea>'
+          ? '<textarea name="'+name+'" required rows="4">'+(typeof options==="string"?esc(options):"")+'</textarea>'
           : type === "select"
             ? '<select name="'+name+'" required>'+options.map((v,i)=>'<option value="'+esc(v)+'" '+(i===0?'selected':'')+'>'+esc(v)+'</option>').join("")+'</select>'
-            : '<input name="'+name+'" type="'+type+'" '+(type==="number"?'step="any"':'')+' '+(["quantity","price","current_price","volume_multiple"].includes(name)?'min="0.0001"':name==="spike_multiplier"?'min="1.1" max="10"':name==="scenario_change_pct"?'min="-100" max="100"':'')+' required placeholder="'+esc(options||"")+'">';
+            : '<input name="'+name+'" type="'+type+'" '+(type==="number"?'step="any"':'')+' '+(["quantity","price","current_price","volume_multiple"].includes(name)?'min="0.0001"':name==="spike_multiplier"?'min="1.1" max="10"':name==="scenario_change_pct"?'min="-100" max="100"':'')+' required value="'+esc(options||"")+'">';
         return '<label class="feature-input"><span>'+esc(label)+'</span>'+control+'</label>';
       }).join("");
       const formId = "verdict-feature-form";
@@ -260,9 +260,8 @@
       };
       form.addEventListener("submit", async event => {
         event.preventDefault();
-        if (!requireUser(message)) return;
         const payload = Object.fromEntries(new FormData(form).entries());
-        payload.user_id = userId;
+        if (userId) payload.user_id = userId;
         for (const [key,value] of Object.entries(payload)) {
           if (key !== "user_id" && form.elements.namedItem(key)?.type === "number") payload[key] = Number(value);
         }
