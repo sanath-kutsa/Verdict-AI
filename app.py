@@ -1,5 +1,9 @@
 from flask import Flask, jsonify, request
 from services.demo_data import load_investor_data
+from services.database import (
+    init_db, create_guest_user, get_user, get_user_trades,
+    add_trade, get_portfolio
+)
 from services.investor_dna import analyse_investor_dna
 from services.circuit_breaker import analyse_circuit_breaker
 from services.stress_test import run_stress_test
@@ -10,6 +14,7 @@ from services.bull_bear import build_bull_bear
 from services.earnings_language import analyse_earnings_language
 
 app = Flask(__name__)
+init_db()
 
 
 def make_response(feature, result, summary, key_findings=None, limitations=None, confidence="Demo only"):
@@ -27,10 +32,31 @@ def make_response(feature, result, summary, key_findings=None, limitations=None,
 
 
 def get_investor_payload(payload=None):
-    """Use an optional supplied fictional dataset, otherwise use the demo dataset."""
+    """Load a supplied dataset, a user's saved trades, or the bundled demo."""
     if isinstance(payload, dict) and isinstance(payload.get("investor"), dict):
         return payload["investor"]
+
+    user_id = payload.get("user_id") if isinstance(payload, dict) else None
+    if user_id is not None:
+        user = get_user(user_id)
+        if not user:
+            raise LookupError("User not found.")
+        investor = load_investor_data()
+        investor["investor_name"] = user["name"]
+        investor["trades"] = get_user_trades(user_id)
+        return investor
+
     return load_investor_data()
+
+
+@app.errorhandler(LookupError)
+def handle_not_found(error):
+    return jsonify({"error": str(error)}), 404
+
+
+@app.errorhandler(ValueError)
+def handle_bad_request(error):
+    return jsonify({"error": str(error)}), 400
 
 
 @app.get("/")
@@ -41,13 +67,8 @@ def home():
         "status": "Backend is running",
         "data_mode": "simulated",
         "available_features": [
-            "investor_dna",
-            "circuit_breaker",
-            "stress_test",
-            "regret_replay",
-            "hype_radar",
-            "move_autopsy",
-            "bull_vs_bear",
+            "investor_dna", "circuit_breaker", "stress_test", "regret_replay",
+            "hype_radar", "move_autopsy", "bull_vs_bear",
             "earnings_language_analyser"
         ]
     })
@@ -56,6 +77,76 @@ def home():
 @app.get("/api/health")
 def health():
     return jsonify({"status": "ok", "message": "Verdict AI backend is running."})
+
+
+@app.post("/api/users/guest")
+def create_guest():
+    payload = request.get_json(silent=True) or {}
+    user = create_guest_user(payload.get("name", "Demo Investor"))
+    return jsonify({
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+        },
+        "data_mode": "simulated",
+        "message": "Demo account created. Save this user ID for later requests."
+    }), 201
+
+
+@app.get("/api/users/<int:user_id>")
+def user_details(user_id):
+    user = get_user(user_id)
+    if not user:
+        raise LookupError("User not found.")
+    return jsonify({
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+        },
+        "data_mode": "simulated",
+    })
+
+
+@app.route("/api/users/<int:user_id>/trades", methods=["GET", "POST"])
+def user_trades(user_id):
+    if not get_user(user_id):
+        raise LookupError("User not found.")
+    if request.method == "GET":
+        return jsonify({
+            "user_id": user_id,
+            "trades": get_user_trades(user_id),
+            "data_mode": "simulated",
+        })
+
+    payload = request.get_json(silent=True) or {}
+    required = ("symbol", "action", "quantity", "price")
+    missing = [field for field in required if payload.get(field) is None]
+    if missing:
+        raise ValueError("Missing required fields: " + ", ".join(missing))
+    trade = add_trade(
+        user_id=user_id,
+        symbol=payload.get("symbol"),
+        action=payload.get("action"),
+        quantity=payload.get("quantity"),
+        price=payload.get("price"),
+        reason=payload.get("reason", ""),
+        trade_date=payload.get("date"),
+    )
+    return jsonify({
+        "trade": trade,
+        "portfolio": get_portfolio(user_id),
+        "data_mode": "simulated",
+    }), 201
+
+
+@app.get("/api/users/<int:user_id>/portfolio")
+def user_portfolio(user_id):
+    portfolio = get_portfolio(user_id)
+    if portfolio is None:
+        raise LookupError("User not found.")
+    return jsonify(portfolio)
 
 
 @app.get("/api/dashboard")
@@ -77,14 +168,14 @@ def dashboard():
 
 @app.route("/api/investor-dna", methods=["GET", "POST"])
 def investor_dna():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     return jsonify(analyse_investor_dna(investor))
 
 
 @app.route("/api/circuit-breaker", methods=["GET", "POST"])
 def circuit_breaker():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     proposed_trade = payload.get("proposed_trade", payload) if isinstance(payload, dict) else None
     if request.method == "GET":
@@ -100,7 +191,7 @@ def circuit_breaker():
 
 @app.route("/api/stress-test", methods=["GET", "POST"])
 def stress_test():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     if request.method == "POST":
         change_pct = payload.get("scenario_change_pct", -10) if isinstance(payload, dict) else -10
@@ -111,14 +202,14 @@ def stress_test():
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
 def regret_replay():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     return jsonify(replay_sells(investor))
 
 
 @app.route("/api/hype-radar", methods=["GET", "POST"])
 def hype_radar():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     multiplier = (
         payload.get("spike_multiplier", 2.0)
@@ -130,7 +221,7 @@ def hype_radar():
 
 @app.route("/api/move-autopsy", methods=["GET", "POST"])
 def move_autopsy():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     symbol = (
         payload.get("symbol", "NOVA")
@@ -142,7 +233,7 @@ def move_autopsy():
 
 @app.route("/api/bull-vs-bear", methods=["GET", "POST"])
 def bull_vs_bear():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
     symbol = (
         payload.get("symbol", "NOVA")
@@ -154,7 +245,7 @@ def bull_vs_bear():
 
 @app.route("/api/earnings-language", methods=["GET", "POST"])
 def earnings_language():
-    payload = request.get_json(silent=True) if request.method == "POST" else None
+    payload = request.get_json(silent=True) if request.method == "POST" else request.args
     payload = payload if isinstance(payload, dict) else {}
     investor = get_investor_payload(payload)
     return jsonify(analyse_earnings_language(
