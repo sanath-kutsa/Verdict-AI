@@ -167,9 +167,13 @@ body[data-theme="dark"] .auth-card {
 }
 
 .exact-brand {
-  max-width: 40px;
+  display: block;
   width: auto;
-  flex-shrink: 0;
+  height: 36px;
+  max-width: 190px;
+  object-fit: contain;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .brand-wordmark-lockup {
@@ -230,10 +234,14 @@ body[data-theme="dark"] .brand-dark {
     gap: 8px;
   }
 
-  .brand-icon,
-  .exact-brand {
+  .brand-icon {
     height: 28px;
     max-width: 28px;
+  }
+
+  .exact-brand {
+    height: 32px;
+    max-width: min(190px, calc(100vw - 100px));
   }
 
   .brand-wordmark-lockup {
