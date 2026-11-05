@@ -183,7 +183,7 @@
             ["quantity","Quantity held","number","10"],
             ["current_price","Reference price per share (₹)","number","1000"],
             ["scenario_change_pct","Hypothetical price change (%)","number","-20"],
-            ["assumption","Scenario assumptions (optional)","textarea","Assume a broad market sell-off and weaker sector demand."]
+            ["assumption","Scenario assumptions","textarea","Assume a broad market sell-off and weaker sector demand."]
           ]
         },
         regret_replay: {
@@ -210,7 +210,7 @@
             ["move_type","Move type","select",["Breakout","Gap up","Gap down","Rally","Sell-off","Reversal","Fade"]],
             ["price_change_pct","Observed price change (%)","number","5"],
             ["volume_multiple","Volume vs average (x)","number","2.1"],
-            ["catalyst","Known catalyst (optional)","text","Quarterly results"],
+            ["catalyst","Known catalyst (enter None if unknown)","text","Quarterly results"],
             ["move_context","What happened?","textarea","The stock rose around 5% after results, with volume about 2.1 times its recent average."]
           ]
         },
@@ -240,7 +240,7 @@
           ? '<textarea name="'+name+'" required rows="4" placeholder="'+(typeof options==="string"?esc(options):"")+'"></textarea>'
           : type === "select"
             ? '<select name="'+name+'" required>'+options.map((v,i)=>'<option value="'+esc(v)+'" '+(i===0?'selected':'')+'>'+esc(v)+'</option>').join("")+'</select>'
-            : '<input name="'+name+'" type="'+type+'" '+(type==="number"?'step="any"':'')+' '+(name==="quantity"?'min="0.0001"':'')+' required placeholder="'+esc(options||"")+'">';
+            : '<input name="'+name+'" type="'+type+'" '+(type==="number"?'step="any"':'')+' '+(["quantity","price","current_price","volume_multiple"].includes(name)?'min="0.0001"':name==="spike_multiplier"?'min="1.1" max="10"':name==="scenario_change_pct"?'min="-100" max="100"':'')+' required placeholder="'+esc(options||"")+'">';
         return '<label class="feature-input"><span>'+esc(label)+'</span>'+control+'</label>';
       }).join("");
       const formId = "verdict-feature-form";
