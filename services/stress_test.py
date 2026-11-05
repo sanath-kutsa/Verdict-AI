@@ -14,7 +14,7 @@ def _open_positions(trades):
     return {symbol: qty for symbol, qty in positions.items() if qty > 0}
 
 
-def run_stress_test(investor, scenario_change_pct=-10.0):
+def run_stress_test(investor, scenario_change_pct=-10.0, position=None, assumption=None):
     """Apply a hypothetical uniform price shock to simulated open positions."""
     try:
         change_pct = float(scenario_change_pct)
@@ -36,6 +36,17 @@ def run_stress_test(investor, scenario_change_pct=-10.0):
 
     positions = _open_positions(investor.get("trades", []))
     history = investor.get("price_history", {})
+    if position:
+        symbol = str(position.get("symbol", "")).strip().upper()
+        try:
+            quantity = float(position.get("quantity"))
+            reference_price = float(position.get("current_price"))
+        except (TypeError, ValueError):
+            raise ValueError("Enter a valid symbol, quantity, and reference price for the stress test.")
+        if not symbol or quantity <= 0 or reference_price <= 0:
+            raise ValueError("Symbol, quantity, and reference price must be valid positive values.")
+        positions = {symbol: quantity}
+        history = {symbol: [{"date": "user-supplied", "close": reference_price}]}
     rows = []
     current_total = 0.0
     stressed_total = 0.0
@@ -45,7 +56,7 @@ def run_stress_test(investor, scenario_change_pct=-10.0):
 
     for symbol, quantity in sorted(positions.items()):
         observations = history.get(symbol, [])
-        reference_source = "bundled_simulated_price_history"
+        reference_source = "user_supplied_reference_price" if observations and observations[0].get("date") == "user-supplied" else "bundled_simulated_price_history"
         if observations:
             latest = max(observations, key=lambda item: str(item.get("date", "")))
             latest_price = float(latest.get("close", 0) or 0)
@@ -84,6 +95,8 @@ def run_stress_test(investor, scenario_change_pct=-10.0):
 
     result = {
         "scenario_change_pct": round(change_pct, 2),
+        "assumption": str(assumption or "")[:700],
+        "analysis_scope": "selected_position" if position else "saved_paper_trade_portfolio",
         "currency": investor.get("currency", "INR"),
         "positions": rows,
         "current_simulated_portfolio_value": round(current_total, 2),
@@ -96,13 +109,13 @@ def run_stress_test(investor, scenario_change_pct=-10.0):
         "data_mode": "simulated",
         "result": result,
         "explanation": {
-            "summary": f"A hypothetical {change_pct:+.1f}% uniform price change was applied to the open quantities in the fictional portfolio.",
+            "summary": f"A hypothetical {change_pct:+.1f}% price change was applied to the selected position or saved paper-trade holdings." + ((" Assumption: " + str(assumption)[:300]) if assumption else ""),
             "key_findings": [
                 f"{len(rows)} simulated open positions were included.",
                 f"The calculated portfolio value changes by {stressed_total - current_total:,.2f} {investor.get('currency', 'INR')} under this simplified scenario."
             ],
             "limitations": [
-                "All quantities and prices are fictional and simulated.",
+                "Positions and reference prices are supplied by the user or loaded from the local paper-trade dataset; they are not live quotes.",
                 "The scenario assumes every included holding moves by the same percentage at the same time.",
                 "It excludes fees, taxes, liquidity, correlations, derivatives, cash balances, and real-world market behaviour.",
                 "This is an educational what-if calculation, not a forecast or financial advice."

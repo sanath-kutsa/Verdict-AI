@@ -1,7 +1,7 @@
 from services.market_evidence import build_market_evidence
 
 
-def analyse_move(investor, symbol="NOVA"):
+def analyse_move(investor, symbol="NOVA", move_type=None, move_context=None, price_change_pct=None, volume_multiple=None, catalyst=None):
     """Explain observed movement using only the supplied simulated evidence."""
     evidence = build_market_evidence(investor, symbol)
     price = evidence["price_history"]
@@ -65,6 +65,25 @@ def analyse_move(investor, symbol="NOVA"):
                 "finding": str(fundamentals["guidance_note"]),
             })
 
+    if price_change_pct is not None:
+        try:
+            observed_change = float(price_change_pct)
+            move_label = str(move_type or "price").lower()
+            drivers.append({"category": "user_supplied_price_move", "signal": "positive" if observed_change > 0 else "negative" if observed_change < 0 else "neutral", "finding": f"User-supplied {move_label} change: {observed_change:+.2f}%.", "value_pct": observed_change})
+        except (TypeError, ValueError):
+            raise ValueError("Observed price change must be a number.")
+    if volume_multiple is not None:
+        try:
+            volume_ratio = float(volume_multiple)
+            if volume_ratio <= 0:
+                raise ValueError
+            drivers.append({"category": "user_supplied_volume", "signal": "attention" if volume_ratio >= 1.5 else "ordinary", "finding": f"User-supplied volume was {volume_ratio:.2f}x the stated average.", "multiple": volume_ratio})
+        except (TypeError, ValueError):
+            raise ValueError("Volume multiple must be greater than zero.")
+    if catalyst and str(catalyst).strip():
+        drivers.append({"category": "user_supplied_catalyst", "signal": "context", "finding": "User-reported catalyst: " + str(catalyst).strip()[:300]})
+    if move_context and str(move_context).strip():
+        drivers.append({"category": "user_supplied_context", "signal": "context", "finding": "User-provided context: " + str(move_context).strip()[:700]})
     if not drivers:
         summary = f"No usable simulated evidence was found for {evidence['symbol']}."
     else:
@@ -81,13 +100,13 @@ def analyse_move(investor, symbol="NOVA"):
             "currency": evidence["currency"],
             "drivers": drivers,
             "evidence": evidence,
-            "evidence_count": len(evidence["evidence_items"]),
+            "evidence_count": len(drivers),
         },
         "explanation": {
             "summary": summary,
             "key_findings": [item["finding"] for item in drivers],
             "limitations": [
-                "All prices, social metrics, and company metrics in this demo are fictional and simulated.",
+                "Bundled market evidence is illustrative; separately labelled observations and context are user-supplied and have not been independently verified.",
                 "A relationship between attention and price movement does not prove causation.",
                 "The sample is sparse and may omit important events or contradictory information.",
                 "This is an educational explanation, not a forecast or financial advice."

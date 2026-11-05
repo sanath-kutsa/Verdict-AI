@@ -54,50 +54,7 @@
             <a href="dashboard.html" class="secondary-btn" style="display:inline-flex; align-items:center; justify-content:center; padding:0 16px; min-height:44px; border-radius:12px;">Back to dashboard</a>
           </div>
 
-          <div class="feature-grid">
-            <div class="feature-card">
-              <h3>Scenario controls</h3>
-              <div class="input-grid">
-                <select aria-label="Scenario selection"><option>Rates +100 bps</option><option>Revenue miss on earnings</option><option>Sector rotation</option></select>
-                <input type="text" value="Portfolio shock: -8%" aria-label="Shock" />
-                <textarea aria-label="Assumption">Assume broad market breadth stays weak while the name is still priced for perfection.</textarea>
-              </div>
-              <button type="button" class="primary-btn" style="margin-top:12px;">Run stress test</button>
-            </div>
-
-            <div class="feature-card result-stack">
-              <div class="analysis-state visible" data-panel="demo">
-                <span class="score-pill warning">Stress score 61/100</span>
-                <div style="margin-top:12px;">
-                  <h3>Portfolio holds up under moderate shock but dips below the target buffer.</h3>
-                  <p>Base case still positive, but downside capture rises sharply once the sector sells off.</p>
-                </div>
-                <div class="timeline">
-                  <div class="timeline-row"><strong>Rates shock</strong><div class="meter"><span style="width: 65%"></span></div><span>65%</span></div>
-                  <div class="timeline-row"><strong>Earnings miss</strong><div class="meter"><span style="width: 72%"></span></div><span>72%</span></div>
-                  <div class="timeline-row"><strong>Liquidity squeeze</strong><div class="meter"><span style="width: 58%"></span></div><span>58%</span></div>
-                </div>
-              </div>
-              <div class="analysis-state" data-panel="loading">
-                <span class="score-pill">Computing scenarios</span>
-                <div style="margin-top:12px;">
-                  <h3>Running multi-factor stress simulations...</h3>
-                </div>
-              </div>
-              <div class="analysis-state" data-panel="empty">
-                <span class="score-pill">No scenarios saved</span>
-                <div style="margin-top:12px;">
-                  <h3>Create a scenario to compare outcomes.</h3>
-                </div>
-              </div>
-              <div class="analysis-state" data-panel="error">
-                <span class="score-pill warning">Scenario engine failed</span>
-                <div style="margin-top:12px;">
-                  <h3>Stress-run was unable to complete.</h3>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="feature-grid"><div class="feature-card"><p>Loading the interactive feature workspace…</p></div></div>
         </section>
       </main>
     </div>
