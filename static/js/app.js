@@ -309,8 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getWatchlist = () => {
       try {
-        const saved = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || '[]');
-        return saved.length ? saved : defaultWatchlist;
+        const raw = localStorage.getItem(WATCHLIST_KEY);
+        return raw === null ? defaultWatchlist : JSON.parse(raw);
       } catch (error) {
         return defaultWatchlist;
       }
@@ -390,6 +390,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderWatchlist = () => {
       const items = getWatchlist();
       if (!watchlistList) return;
+      if (!items.length) {
+        watchlistList.innerHTML = '<li class="watchlist-item">Your watchlist is empty. Add a symbol from the stock cards.</li>';
+        return;
+      }
       watchlistList.innerHTML = items.map((symbol) => {
         const stock = demoStocks.find((item) => item.symbol === symbol) || demoStocks[0];
         return `
