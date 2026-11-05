@@ -35,8 +35,12 @@ load_local_env()
 def attach_gemini_analysis(feature, payload, response):
     """Add Gemini interpretation while preserving deterministic results as a fallback."""
     response["data_mode"] = response.get("data_mode", "simulated")
+    if hasattr(payload, "to_dict"):
+        payload = payload.to_dict(flat=True)
+    elif not isinstance(payload, dict):
+        payload = {}
     try:
-        analysis = generate_feature_analysis(feature, payload or {}, response)
+        analysis = generate_feature_analysis(feature, payload, response)
         response["analysis_mode"] = "gemini"
         response["ai_analysis"] = analysis
 
