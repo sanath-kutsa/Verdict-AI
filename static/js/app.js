@@ -713,7 +713,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const base = demoCandleSeeds[symbol] || demoCandleSeeds['NIFTY 50'];
     const total = 40;
     const entries = [];
-    const stepMinutes = rangeLabel === '1D' ? 30 : rangeLabel === '1W' ? 90 : rangeLabel === '1M' ? 180 : 360;
+    const stepMinutesByRange = { '1D': 15, '1W': 240, '1M': 1080, '3M': 4320, '6M': 8640, '1Y': 12960 };
+    const stepMinutes = stepMinutesByRange[rangeLabel] || stepMinutesByRange['1M'];
 
     for (let i = 0; i < total; i += 1) {
       // Adjacent sample values create genuine advances and pullbacks.
