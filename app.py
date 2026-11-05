@@ -179,7 +179,8 @@ def dashboard():
 def investor_dna():
     payload = request.get_json(silent=True) if request.method == "POST" else request.args
     investor = get_investor_payload(payload)
-    return jsonify(analyse_investor_dna(investor))
+    assessment = payload if request.method == "POST" else None
+    return jsonify(analyse_investor_dna(investor, assessment))
 
 
 @app.route("/api/circuit-breaker", methods=["GET", "POST"])
@@ -204,9 +205,13 @@ def stress_test():
     investor = get_investor_payload(payload)
     if request.method == "POST":
         change_pct = payload.get("scenario_change_pct", -10) if isinstance(payload, dict) else -10
+        position = None
+        if isinstance(payload, dict) and any(payload.get(key) not in (None, "") for key in ("symbol", "quantity", "current_price")):
+            position = {key: payload.get(key) for key in ("symbol", "quantity", "current_price")}
     else:
         change_pct = request.args.get("scenario_change_pct", default=-10, type=float)
-    return jsonify(run_stress_test(investor, change_pct))
+        position = None
+    return jsonify(run_stress_test(investor, change_pct, position))
 
 
 @app.route("/api/regret-replay", methods=["GET", "POST"])
@@ -230,7 +235,13 @@ def hype_radar():
         if isinstance(payload, dict) and request.method == "POST"
         else request.args.get("spike_multiplier", default=2.0, type=float)
     )
-    return jsonify(analyse_hype(investor, multiplier))
+    return jsonify(analyse_hype(
+        investor,
+        multiplier,
+        theme=payload.get("theme") if isinstance(payload, dict) else None,
+        signal_source=payload.get("signal_source") if isinstance(payload, dict) else None,
+        narrative=payload.get("narrative") if isinstance(payload, dict) else None,
+    ))
 
 
 @app.route("/api/move-autopsy", methods=["GET", "POST"])
@@ -242,7 +253,15 @@ def move_autopsy():
         if isinstance(payload, dict) and request.method == "POST"
         else request.args.get("symbol", "NOVA")
     )
-    return jsonify(analyse_move(investor, symbol))
+    return jsonify(analyse_move(
+        investor,
+        symbol,
+        move_type=payload.get("move_type") if isinstance(payload, dict) else None,
+        move_context=payload.get("move_context") if isinstance(payload, dict) else None,
+        price_change_pct=payload.get("price_change_pct") if isinstance(payload, dict) else None,
+        volume_multiple=payload.get("volume_multiple") if isinstance(payload, dict) else None,
+        catalyst=payload.get("catalyst") if isinstance(payload, dict) else None,
+    ))
 
 
 @app.route("/api/bull-vs-bear", methods=["GET", "POST"])
