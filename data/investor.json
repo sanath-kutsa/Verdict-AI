@@ -3,47 +3,644 @@
   "profile_note": "Fictional demo investor. All records and values are simulated.",
   "currency": "INR",
   "trades": [
-    {"id": "T001", "symbol": "NOVA", "action": "BUY", "quantity": 10, "price": 100, "date": "2026-09-01", "reason": "Initial research"},
-    {"id": "T002", "symbol": "NOVA", "action": "SELL", "quantity": 10, "price": 108, "date": "2026-09-08", "reason": "Booked a small gain"},
-    {"id": "T003", "symbol": "ORBIT", "action": "BUY", "quantity": 8, "price": 250, "date": "2026-09-10", "reason": "Positive online discussion"},
-    {"id": "T004", "symbol": "ORBIT", "action": "SELL", "quantity": 8, "price": 232, "date": "2026-09-12", "reason": "Concern after a price dip"},
-    {"id": "T005", "symbol": "NOVA", "action": "BUY", "quantity": 12, "price": 125, "date": "2026-09-18", "reason": "Price was rising quickly"},
-    {"id": "T006", "symbol": "NOVA", "action": "BUY", "quantity": 6, "price": 132, "date": "2026-09-19", "reason": "Did not want to miss the move"},
-    {"id": "T007", "symbol": "NOVA", "action": "SELL", "quantity": 18, "price": 119, "date": "2026-09-22", "reason": "Concern after a price dip"},
-    {"id": "T008", "symbol": "PULSE", "action": "BUY", "quantity": 15, "price": 80, "date": "2026-09-25", "reason": "Company research"},
-    {"id": "T009", "symbol": "PULSE", "action": "SELL", "quantity": 15, "price": 88, "date": "2026-10-02", "reason": "Booked a gain"},
-    {"id": "T010", "symbol": "ORBIT", "action": "BUY", "quantity": 10, "price": 210, "date": "2026-10-05", "reason": "Price was rising quickly"}
+    {
+      "id": "T001",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 10,
+      "price": 100,
+      "date": "2026-09-01",
+      "reason": "Initial research"
+    },
+    {
+      "id": "T002",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 10,
+      "price": 108,
+      "date": "2026-09-08",
+      "reason": "Booked a small gain"
+    },
+    {
+      "id": "T003",
+      "symbol": "ORBIT",
+      "action": "BUY",
+      "quantity": 8,
+      "price": 250,
+      "date": "2026-09-10",
+      "reason": "Positive online discussion"
+    },
+    {
+      "id": "T004",
+      "symbol": "ORBIT",
+      "action": "SELL",
+      "quantity": 8,
+      "price": 232,
+      "date": "2026-09-12",
+      "reason": "Concern after a price dip"
+    },
+    {
+      "id": "T005",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 12,
+      "price": 125,
+      "date": "2026-09-18",
+      "reason": "Price was rising quickly"
+    },
+    {
+      "id": "T006",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 6,
+      "price": 132,
+      "date": "2026-09-19",
+      "reason": "Did not want to miss the move"
+    },
+    {
+      "id": "T007",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 18,
+      "price": 119,
+      "date": "2026-09-22",
+      "reason": "Concern after a price dip"
+    },
+    {
+      "id": "T008",
+      "symbol": "PULSE",
+      "action": "BUY",
+      "quantity": 15,
+      "price": 80,
+      "date": "2026-09-25",
+      "reason": "Company research"
+    },
+    {
+      "id": "T009",
+      "symbol": "PULSE",
+      "action": "SELL",
+      "quantity": 15,
+      "price": 88,
+      "date": "2026-10-02",
+      "reason": "Booked a gain"
+    },
+    {
+      "id": "T010",
+      "symbol": "ORBIT",
+      "action": "BUY",
+      "quantity": 10,
+      "price": 210,
+      "date": "2026-10-05",
+      "reason": "Price was rising quickly"
+    },
+    {
+      "id": "T011",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 8,
+      "price": 140,
+      "date": "2026-10-17",
+      "reason": "Bought after a sharp price jump; feared missing out"
+    },
+    {
+      "id": "T012",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 8,
+      "price": 147,
+      "date": "2026-10-18",
+      "reason": "Sold after a sudden dip; short-term fear"
+    },
+    {
+      "id": "T013",
+      "symbol": "ORBIT",
+      "action": "BUY",
+      "quantity": 10,
+      "price": 205,
+      "date": "2026-10-18",
+      "reason": "Bought after repeated positive online posts"
+    },
+    {
+      "id": "T014",
+      "symbol": "ORBIT",
+      "action": "SELL",
+      "quantity": 10,
+      "price": 196.8,
+      "date": "2026-10-19",
+      "reason": "Sold quickly after a small decline"
+    },
+    {
+      "id": "T015",
+      "symbol": "PULSE",
+      "action": "BUY",
+      "quantity": 12,
+      "price": 90,
+      "date": "2026-10-19",
+      "reason": "Planned entry after reviewing company notes"
+    },
+    {
+      "id": "T016",
+      "symbol": "PULSE",
+      "action": "SELL",
+      "quantity": 12,
+      "price": 96.3,
+      "date": "2026-10-20",
+      "reason": "Sold after reaching the planned target"
+    },
+    {
+      "id": "T017",
+      "symbol": "ZENITH",
+      "action": "BUY",
+      "quantity": 6,
+      "price": 160,
+      "date": "2026-10-20",
+      "reason": "Bought because the stock was trending online"
+    },
+    {
+      "id": "T018",
+      "symbol": "ZENITH",
+      "action": "SELL",
+      "quantity": 6,
+      "price": 150.4,
+      "date": "2026-10-21",
+      "reason": "Panic reaction to a red trading session"
+    },
+    {
+      "id": "T019",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 7,
+      "price": 132,
+      "date": "2026-10-21",
+      "reason": "Added to position while price was rising quickly"
+    },
+    {
+      "id": "T020",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 7,
+      "price": 128.04,
+      "date": "2026-10-22",
+      "reason": "Sold to avoid further short-term losses"
+    },
+    {
+      "id": "T021",
+      "symbol": "ORBIT",
+      "action": "BUY",
+      "quantity": 9,
+      "price": 198,
+      "date": "2026-10-22",
+      "reason": "Research-based entry with a written plan"
+    },
+    {
+      "id": "T022",
+      "symbol": "ORBIT",
+      "action": "SELL",
+      "quantity": 9,
+      "price": 209.88,
+      "date": "2026-10-23",
+      "reason": "Booked profit at the planned level"
+    },
+    {
+      "id": "T023",
+      "symbol": "PULSE",
+      "action": "BUY",
+      "quantity": 10,
+      "price": 94,
+      "date": "2026-10-23",
+      "reason": "Bought after seeing several bullish posts"
+    },
+    {
+      "id": "T024",
+      "symbol": "PULSE",
+      "action": "SELL",
+      "quantity": 10,
+      "price": 89.3,
+      "date": "2026-10-24",
+      "reason": "Exited after negative online discussion"
+    },
+    {
+      "id": "T025",
+      "symbol": "ZENITH",
+      "action": "BUY",
+      "quantity": 5,
+      "price": 151,
+      "date": "2026-10-24",
+      "reason": "Entered after comparing company fundamentals"
+    },
+    {
+      "id": "T026",
+      "symbol": "ZENITH",
+      "action": "SELL",
+      "quantity": 5,
+      "price": 157.04,
+      "date": "2026-10-25",
+      "reason": "Sold after reaching target price"
+    },
+    {
+      "id": "T027",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 11,
+      "price": 128,
+      "date": "2026-10-25",
+      "reason": "Bought during a fast upward move"
+    },
+    {
+      "id": "T028",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 11,
+      "price": 119.04,
+      "date": "2026-10-26",
+      "reason": "Sold after a sharp intraday fall"
+    },
+    {
+      "id": "T029",
+      "symbol": "ORBIT",
+      "action": "BUY",
+      "quantity": 8,
+      "price": 190,
+      "date": "2026-10-26",
+      "reason": "Small planned position based on research"
+    },
+    {
+      "id": "T030",
+      "symbol": "ORBIT",
+      "action": "SELL",
+      "quantity": 8,
+      "price": 195.7,
+      "date": "2026-10-27",
+      "reason": "Reduced position after a modest gain"
+    },
+    {
+      "id": "T031",
+      "symbol": "PULSE",
+      "action": "BUY",
+      "quantity": 7,
+      "price": 88,
+      "date": "2026-10-27",
+      "reason": "Bought because mentions and excitement increased"
+    },
+    {
+      "id": "T032",
+      "symbol": "PULSE",
+      "action": "SELL",
+      "quantity": 7,
+      "price": 95.04,
+      "date": "2026-10-28",
+      "reason": "Booked a gain earlier than planned"
+    },
+    {
+      "id": "T033",
+      "symbol": "ZENITH",
+      "action": "BUY",
+      "quantity": 6,
+      "price": 158,
+      "date": "2026-10-28",
+      "reason": "Bought after a price breakout without a written plan"
+    },
+    {
+      "id": "T034",
+      "symbol": "ZENITH",
+      "action": "SELL",
+      "quantity": 6,
+      "price": 151.68,
+      "date": "2026-10-29",
+      "reason": "Exited when price moved against the trade"
+    },
+    {
+      "id": "T035",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 10,
+      "price": 121,
+      "date": "2026-10-29",
+      "reason": "Waited for a pullback before buying"
+    },
+    {
+      "id": "T036",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 10,
+      "price": 127.05,
+      "date": "2026-10-30",
+      "reason": "Sold according to the original target"
+    },
+    {
+      "id": "T037",
+      "symbol": "ORBIT",
+      "action": "BUY",
+      "quantity": 9,
+      "price": 184,
+      "date": "2026-10-30",
+      "reason": "Bought after a positive social-media spike"
+    },
+    {
+      "id": "T038",
+      "symbol": "ORBIT",
+      "action": "SELL",
+      "quantity": 9,
+      "price": 172.96,
+      "date": "2026-10-31",
+      "reason": "Sold after becoming worried about a dip"
+    },
+    {
+      "id": "T039",
+      "symbol": "PULSE",
+      "action": "BUY",
+      "quantity": 8,
+      "price": 96,
+      "date": "2026-10-31",
+      "reason": "Research-based entry with defined risk"
+    },
+    {
+      "id": "T040",
+      "symbol": "PULSE",
+      "action": "SELL",
+      "quantity": 8,
+      "price": 99.84,
+      "date": "2026-11-01",
+      "reason": "Closed after reaching the planned target"
+    },
+    {
+      "id": "T041",
+      "symbol": "ZENITH",
+      "action": "BUY",
+      "quantity": 7,
+      "price": 149,
+      "date": "2026-11-01",
+      "reason": "Added to a losing position to recover earlier losses"
+    },
+    {
+      "id": "T042",
+      "symbol": "ZENITH",
+      "action": "SELL",
+      "quantity": 7,
+      "price": 141.55,
+      "date": "2026-11-02",
+      "reason": "Closed after losses increased"
+    },
+    {
+      "id": "T043",
+      "symbol": "NOVA",
+      "action": "BUY",
+      "quantity": 9,
+      "price": 126,
+      "date": "2026-11-02",
+      "reason": "Bought after checking the business update"
+    },
+    {
+      "id": "T044",
+      "symbol": "NOVA",
+      "action": "SELL",
+      "quantity": 9,
+      "price": 133.56,
+      "date": "2026-11-03",
+      "reason": "Booked profit at the planned level"
+    }
   ],
   "price_history": {
     "NOVA": [
-      {"date": "2026-09-01", "close": 100},
-      {"date": "2026-09-08", "close": 108},
-      {"date": "2026-09-15", "close": 116},
-      {"date": "2026-09-18", "close": 125},
-      {"date": "2026-09-19", "close": 132},
-      {"date": "2026-09-22", "close": 119},
-      {"date": "2026-09-29", "close": 124}
+      {
+        "date": "2026-09-01",
+        "close": 100
+      },
+      {
+        "date": "2026-09-08",
+        "close": 108
+      },
+      {
+        "date": "2026-09-15",
+        "close": 116
+      },
+      {
+        "date": "2026-09-18",
+        "close": 125
+      },
+      {
+        "date": "2026-09-19",
+        "close": 132
+      },
+      {
+        "date": "2026-09-22",
+        "close": 119
+      },
+      {
+        "date": "2026-09-29",
+        "close": 124
+      },
+      {
+        "date": "2026-10-17",
+        "close": 140
+      },
+      {
+        "date": "2026-10-18",
+        "close": 147
+      },
+      {
+        "date": "2026-10-21",
+        "close": 132
+      },
+      {
+        "date": "2026-10-22",
+        "close": 128.04
+      },
+      {
+        "date": "2026-10-25",
+        "close": 128
+      },
+      {
+        "date": "2026-10-26",
+        "close": 119.04
+      },
+      {
+        "date": "2026-10-29",
+        "close": 121
+      },
+      {
+        "date": "2026-10-30",
+        "close": 127.05
+      },
+      {
+        "date": "2026-11-02",
+        "close": 126
+      },
+      {
+        "date": "2026-11-03",
+        "close": 133.56
+      }
     ],
     "ORBIT": [
-      {"date": "2026-09-10", "close": 250},
-      {"date": "2026-09-12", "close": 232},
-      {"date": "2026-09-20", "close": 220},
-      {"date": "2026-10-05", "close": 210},
-      {"date": "2026-10-12", "close": 218}
+      {
+        "date": "2026-09-10",
+        "close": 250
+      },
+      {
+        "date": "2026-09-12",
+        "close": 232
+      },
+      {
+        "date": "2026-09-20",
+        "close": 220
+      },
+      {
+        "date": "2026-10-05",
+        "close": 210
+      },
+      {
+        "date": "2026-10-12",
+        "close": 218
+      },
+      {
+        "date": "2026-10-18",
+        "close": 205
+      },
+      {
+        "date": "2026-10-19",
+        "close": 196.8
+      },
+      {
+        "date": "2026-10-22",
+        "close": 198
+      },
+      {
+        "date": "2026-10-23",
+        "close": 209.88
+      },
+      {
+        "date": "2026-10-26",
+        "close": 190
+      },
+      {
+        "date": "2026-10-27",
+        "close": 195.7
+      },
+      {
+        "date": "2026-10-30",
+        "close": 184
+      },
+      {
+        "date": "2026-10-31",
+        "close": 172.96
+      }
     ],
     "PULSE": [
-      {"date": "2026-09-25", "close": 80},
-      {"date": "2026-10-02", "close": 88},
-      {"date": "2026-10-09", "close": 91},
-      {"date": "2026-10-16", "close": 86}
+      {
+        "date": "2026-09-25",
+        "close": 80
+      },
+      {
+        "date": "2026-10-02",
+        "close": 88
+      },
+      {
+        "date": "2026-10-09",
+        "close": 91
+      },
+      {
+        "date": "2026-10-16",
+        "close": 86
+      },
+      {
+        "date": "2026-10-19",
+        "close": 90
+      },
+      {
+        "date": "2026-10-20",
+        "close": 96.3
+      },
+      {
+        "date": "2026-10-23",
+        "close": 94
+      },
+      {
+        "date": "2026-10-24",
+        "close": 89.3
+      },
+      {
+        "date": "2026-10-27",
+        "close": 88
+      },
+      {
+        "date": "2026-10-28",
+        "close": 95.04
+      },
+      {
+        "date": "2026-10-31",
+        "close": 96
+      },
+      {
+        "date": "2026-11-01",
+        "close": 99.84
+      }
+    ],
+    "ZENITH": [
+      {
+        "date": "2026-10-20",
+        "close": 160
+      },
+      {
+        "date": "2026-10-21",
+        "close": 150.4
+      },
+      {
+        "date": "2026-10-24",
+        "close": 151
+      },
+      {
+        "date": "2026-10-25",
+        "close": 157.04
+      },
+      {
+        "date": "2026-10-28",
+        "close": 158
+      },
+      {
+        "date": "2026-10-29",
+        "close": 151.68
+      },
+      {
+        "date": "2026-11-01",
+        "close": 149
+      },
+      {
+        "date": "2026-11-02",
+        "close": 141.55
+      }
     ]
   },
   "social_mentions": [
-    {"date": "2026-10-01", "symbol": "NOVA", "mentions": 42, "sentiment": 0.58},
-    {"date": "2026-10-02", "symbol": "NOVA", "mentions": 45, "sentiment": 0.61},
-    {"date": "2026-10-03", "symbol": "NOVA", "mentions": 48, "sentiment": 0.60},
-    {"date": "2026-10-04", "symbol": "NOVA", "mentions": 180, "sentiment": 0.84},
-    {"date": "2026-10-05", "symbol": "NOVA", "mentions": 51, "sentiment": 0.62}
+    {
+      "date": "2026-10-01",
+      "symbol": "NOVA",
+      "mentions": 42,
+      "sentiment": 0.58
+    },
+    {
+      "date": "2026-10-02",
+      "symbol": "NOVA",
+      "mentions": 45,
+      "sentiment": 0.61
+    },
+    {
+      "date": "2026-10-03",
+      "symbol": "NOVA",
+      "mentions": 48,
+      "sentiment": 0.6
+    },
+    {
+      "date": "2026-10-04",
+      "symbol": "NOVA",
+      "mentions": 180,
+      "sentiment": 0.84
+    },
+    {
+      "date": "2026-10-05",
+      "symbol": "NOVA",
+      "mentions": 51,
+      "sentiment": 0.62
+    }
   ],
   "earnings_transcripts": [
     {
