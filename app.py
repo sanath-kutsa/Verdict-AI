@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from services.demo_data import load_investor_data
+from services.investor_dna import analyse_investor_dna
 
 app = Flask(__name__)
 
@@ -51,6 +52,12 @@ def dashboard():
         key_findings=[f"{len(trades)} simulated trades are available for analysis."],
     )
     return jsonify(response)
+
+
+@app.get("/api/investor-dna")
+def investor_dna():
+    investor = load_investor_data()
+    return jsonify(analyse_investor_dna(investor))
 
 
 if __name__ == "__main__":
