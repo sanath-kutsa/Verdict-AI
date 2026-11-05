@@ -507,10 +507,19 @@ document.addEventListener('DOMContentLoaded', () => {
       tradeForm.addEventListener('submit', handleTradeSubmit);
     }
 
-    document.querySelectorAll('.range-btn').forEach((button) => {
+    document.querySelectorAll('.range-row .range-btn').forEach((button) => {
       button.addEventListener('click', () => {
-        document.querySelectorAll('.range-btn').forEach((item) => item.classList.remove('active'));
+        document.querySelectorAll('.range-row .range-btn').forEach((item) => item.classList.remove('active'));
         button.classList.add('active');
+        const chartContainer = document.querySelector('.stock-chart-box[data-candlestick]');
+        if (chartContainer) {
+          chartContainer.setAttribute('data-range', button.getAttribute('data-range') || '1M');
+          renderCandlestickChart(
+            chartContainer,
+            chartContainer.getAttribute('data-candlestick') || 'RELIANCE',
+            button.getAttribute('data-range') || '1M'
+          );
+        }
       });
     });
 
